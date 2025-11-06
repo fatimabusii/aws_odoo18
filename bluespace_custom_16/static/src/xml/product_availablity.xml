@@ -1,0 +1,75 @@
+<!-- <templates>
+    <t t-extend="website_sale_stock.product_availability">
+        <t t-jquery="div#out_of_stock_message" t-operation="replace">
+            <div id="out_of_stock_message">
+                <t t-if='has_out_of_stock_message' t-out='out_of_stock_message'/>
+                <t t-elif="!allow_out_of_stock_order">
+                    <div class="text-danger fw-bold">
+                        <i class="fa fa-times me-1"/>
+                        Unit is not Available.
+                    </div>
+                </t>
+            </div>
+        </t>       
+    </t>
+
+    <t t-extend="website_sale_stock_wishlist.product_availability">
+        <t t-jquery="button#wsale_save_for_later_button" t-operation="replace">
+            <button
+                    id="wsale_save_for_later_button"
+                    t-if="!is_in_wishlist"
+                    type="button"
+                    role="button"
+                    class="btn btn-secondary text-nowrap o_add_wishlist_dyn"
+                    t-att-data-product-template-id="product_id"
+                    t-att-data-product-product-id="product_id"
+                    data-action="o_wishlist"
+                    title="Add to wishlist"
+                    disabled="true">
+                <i class="fa fa-clock-o me-2"/>
+                Thanks, to complete Check Out,<br/>click on the Cart icon. 
+            </button>
+        </t>
+        <t t-jquery="div#wsale_added_to_your_wishlist_alert" t-operation="replace">
+        </t>
+    </t>
+</templates> -->
+
+
+<template t-name="bluespace_custom_16.product_availability_custom">
+    <!-- Extend website_sale_stock.product_availability -->
+    <t t-extend="website_sale_stock.product_availability">
+        <t t-jquery="div#out_of_stock_message" t-operation="replace">
+            <div id="out_of_stock_message">
+                <t t-if="has_out_of_stock_message" t-out="out_of_stock_message"/>
+                <t t-elif="!allow_out_of_stock_order">
+                    <div class="text-danger fw-bold">
+                        <i class="fa fa-times me-1"/>
+                        Unit is not Available.
+                    </div>
+                </t>
+            </div>
+        </t>       
+    </t>
+
+    <!-- Extend website_sale_stock_wishlist.product_availability -->
+    <t t-extend="website_sale_stock_wishlist.product_availability">
+        <t t-jquery="button#wsale_save_for_later_button" t-operation="replace">
+            <button
+                id="wsale_save_for_later_button"
+                t-if="!is_in_wishlist"
+                type="button"
+                role="button"
+                class="btn btn-secondary text-nowrap o_add_wishlist_dyn"
+                t-att-data-product-template-id="product_id"
+                t-att-data-product-product-id="product_id"
+                data-action="o_wishlist"
+                title="Add to wishlist"
+                disabled="true">
+                <i class="fa fa-clock-o me-2"/>
+                Thanks, to complete Check Out,<br/>click on the Cart icon.
+            </button>
+        </t>
+        <t t-jquery="div#wsale_added_to_your_wishlist_alert" t-operation="replace"/>
+    </t>
+</template>

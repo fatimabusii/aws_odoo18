@@ -1,0 +1,100 @@
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.rental.stock</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale_renting.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@name='rental_delay_costs']" position="after">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_right_pane mt16">
+                        <span class="o_form_label">
+                            Manager Non Payment Email
+                        </span>
+                        <div class="text-muted" title="Those values are applied to Email Manger for Non Payment.">
+                            Manager Non Payment Email
+                        </div>
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="manager_email" string='Email' class="col-lg-3 o_light_label"/>
+                                <field name="manager_email" class="col-lg-2 p-0"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <template id="portal_invoice_payment_status" inherit_id="account_payment.portal_my_invoices_payment">
+        <xpath expr="//t[@name='invoice_status_posted']/span[1]" position="before">
+            <t t-set="last_tx" t-value="invoice.get_portal_last_transaction()"/>
+            <td class="tx_status text-center">
+                <t t-if="invoice.state == 'posted' and invoice.payment_state in ('not_paid', 'partial')">
+                    <span class="badge rounded-pill text-bg-info"><i class="fa fa-fw fa-clock-o"/><span class="d-none d-md-inline"> Waiting for Payment</span></span>
+                </t>
+                <t t-if="invoice.state == 'posted' and last_tx.state == 'authorized'">
+                    <span class="badge rounded-pill text-bg-primary"><i class="fa fa-fw fa-check"/><span class="d-none d-md-inline"> Authorized</span></span>
+                </t>
+                <t t-if="invoice.state == 'posted' and last_tx.state == 'pending' and last_tx.provider_code not in ('none', 'custom')">
+                  <span class="badge rounded-pill text-bg-warning"><span class="d-none d-md-inline"> Pending</span></span>
+                </t>
+                <t t-if="invoice.state == 'posted' and invoice.payment_state in ('paid', 'in_payment')">
+                    <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/><span class="d-none d-md-inline"> Paid</span></span>
+                </t>
+                <t t-if="invoice.state == 'posted' and invoice.payment_state == 'reversed'">
+                    <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/><span class="d-none d-md-inline"> Reversed</span></span>
+                </t>
+                <t t-if="invoice.state == 'cancel'">
+                    <span class="badge rounded-pill text-bg-danger"><i class="fa fa-fw fa-remove"/><span class="d-none d-md-inline"> Cancelled</span></span>
+                </t>
+            </td>
+        </xpath>
+    </template>
+
+    <template id="portal_invoice_payment_status_success" inherit_id="payment.state_header">
+        <xpath expr="//div[@name='o_payment_status_alert']" position="replace">
+            <div t-if="status_message or tx.state_message" id="o_payment_status_alert" style="display:none;">
+                <button class="btn-close" data-bs-dismiss="alert" title="Dismiss"/>
+                <t t-if="status_message" t-out="status_message"/>
+                <t t-if="tx.state_message" t-out="tx.state_message"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_invoice_page_inherit_payment" inherit_id="account_payment.portal_invoice_page_inherit_payment">
+        <!-- <xpath expr="//div[hasclass('d-grid')]" position="replace">
+            <div class="d-grid">
+                <a href="#" t-if="invoice.state == 'posted' and invoice.payment_state in ('not_paid', 'partial') and invoice.amount_total and invoice.move_type == 'out_invoice'"
+
+                    class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#pay_with">
+                    <i class="fa fa-fw fa-arrow-circle-right"/> Pay Now
+                </a>
+                <div t-if="tx_ids and not pending_manual_txs and not invoice.amount_residual and invoice.payment_state not in ('paid', 'in_payment')" class="alert alert-info py-1 mb-2" >
+                    <i class="fa fa-fw fa-check-circle"/> Pending
+                </div>
+                <div t-if="invoice.payment_state in ('paid', 'in_payment')" class="alert alert-success py-1 mb-2" >
+                    <i class="fa fa-fw fa-check-circle"/> Paid
+                </div>
+            </div>
+        </xpath> -->
+        <xpath expr="//t[@t-call='portal.portal_record_sidebar']//h2[1]/following-sibling::*[position()&lt;=4]" position="replace">
+            <t t-set="pending_txs" t-value="invoice.transaction_ids.filtered(lambda tx: tx.state in ('pending', 'authorized') and tx.provider_code not in ('none', 'custom'))"/>
+            
+            <div t-if="invoice.state == 'posted' and invoice.payment_state in ('not_paid', 'partial') and invoice.amount_total and invoice.move_type == 'out_invoice'"
+                class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#pay_with">
+                <i class="fa fa-fw fa-arrow-circle-right"/> Pay Now
+            </div>
+            
+            <div t-if="pending_txs and invoice.payment_state not in ('paid', 'in_payment')" 
+                class="rounded text-bg-info fw-normal badge mb-2">
+                <i class="fa fa-fw fa-check-circle"/> Pending
+            </div>
+            
+            <div t-if="invoice.payment_state in ('paid', 'in_payment') or invoice.currency_id.is_zero(invoice.amount_residual)" 
+                class="rounded text-bg-success fw-normal badge mb-2">
+                <i class="fa fa-fw fa-check-circle"/> Paid
+            </div>
+        </xpath>
+
+    </template>
+</odoo>

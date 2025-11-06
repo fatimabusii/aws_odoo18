@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="partner_form_custom" model="ir.ui.view">
+        <field name="name">custoner_statement.partner_form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//sheet" position="before">
+        		<header>
+	                <button name="action_approved" type="object"  string="Approved" class="oe_highlight" invisible="state != 'draft'"/>
+	                <button name="action_rejected" type="object"  string="Rejected" class="oe_highlight" invisible="state != 'draft'"/>
+	                <button name="action_draft" type="object"  string="Draft" class="oe_highlight" invisible="state not in ('approve','rejected')"/>
+	                <field name="state" widget="statusbar" statusbar_visible="draft,rejected,approve"/>
+            </header>
+        	</xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_attechment"
+                    class="oe_stat_button"
+                    icon="fa-bars"
+                    string="Partner Documents"
+                    type="object">
+                    <field name="partner_document_count" widget="statinfo" string="Partner Documents"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='property_product_pricelist']" position="after">
+                <field name="free_office" readonly="1"/>
+                <field name="vehicle_reg_num" readonly="1"/>
+                <field name="most_recent_landlord_name" readonly="1"/>
+                <field name="most_recent_landlord_phone" readonly="1"/>
+                <field name="relative_name" readonly="1"/>
+                <field name="relative_phone" readonly="1"/>
+            </xpath>
+
+            <xpath expr="//page[@name='internal_notes']" position="before">
+                <page name="bluespace_entity_rep" string="Bluespace Info">
+                    <group>
+                        <group name="entity" string="Entity">
+                            <field name="entity_reg_no" string="Registration Number"/>
+                            <field name="entity_vat_no" string="VAT Number"/>
+                            <!-- <field name="entity_reg_cert" string="Upload Entity Registration Certificate/Document"/> -->
+                        </group>
+                        <group string="Entity Representative" name="entity_rep" priority="1">
+                            <field name="entity_rep_role" string="Role"/>
+                            <field name="entity_rep_name_sur" string="Name and Surname"/>
+                            <field name="entity_rep_id_number" string="ID Number"/>
+                            <field name="entity_rep_cell" string="Cell Phone Number"/>
+                            <field name="entity_rep_email" string="Email Address"/>
+                            <!-- <field name="entity_rep_proof" string="Upload Proof of Current Residential Address (FICA complaint)"/>
+                            <field name="entity_rep_sign" string="Mandate/Resolution for Representative to Sign this Lease Agreement"/> -->
+                        </group>
+                        <group name="ind_resp_pay_ac" string="Individual Responsible for Payment of Accounts">
+                            <field name="ind_resp_pay_ac_name_sur" string="Name and Surname"/>
+                            <field name="ind_resp_pay_ac_cell" string="Telephone/Cell Phone Number"/>
+                            <field name="ind_resp_pay_ac_email" string="Email Address"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="string">Legal Entity Type</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="erpweb_customer_bank_inherit" model="ir.ui.view">
+        <field name="name">res.bank.form.inherit</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="arch" type="xml">
+           <field name="bic" position="attributes">
+                <attribute name="string">Branch Code</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="erpweb_sales_team_inherit" model="ir.ui.view">
+        <field name="name">crm.team.form.inherit</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+        <field name="arch" type="xml">
+            <field name="member_company_ids" position="after">
+                <field name="is_website"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_sale_order_bluespace_inherit" model="ir.ui.view">
+        <field name="name">sale.order.bluespace.extended</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']" position='after'>
+                <page string="Bluespace Info" name="bluespace_information">
+                    <group>
+                        <group>
+                            <!-- <field name='is_flexible' readonly="0"/>
+                            <field name='is_specific_move' readonly="0"/>
+                            <field name='is_office_boardroom_order' readonly="0"/> -->
+                            <field name="is_approved_order"/>
+                            <field name="is_notice_given"/>
+                            <field name="notice_given" readonly="1"/>
+                            <label for="month" invisible="is_notice_given == False"/>
+                            <div class="o_row" invisible="is_notice_given == False">
+                                <field name="month" id="month" required="is_notice_given == True"/>
+                                <field name="year_id" options="{&quot;no_open&quot;: True}" required="is_notice_given == True"/>
+                            </div>
+                            <!-- <field name="no_of_visitors" readonly="1"/> -->
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_template_id']" position="after">
+                <field name="start_date" widget="date" column_invisible="parent.is_office_boardroom_order == True"/>
+                <field name="return_date" widget="date" column_invisible="parent.is_office_boardroom_order == True" readonly="parent.is_flexible == True"/>
+                <field name="start_date" column_invisible="parent.is_office_boardroom_order == False"/>
+                <field name="return_date" column_invisible="parent.is_office_boardroom_order == False"/>
+                <field name="is_rental" invisible="1"/>
+                <!-- <field name="temporal_type" invisible="1"/> -->
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position='after'>
+                <field name="is_website" readonly="1"/>
+                <field name='is_office_boardroom_order' readonly="0"/>
+                <field name='is_flexible' invisible="is_office_boardroom_order == True"/>
+                <field name='is_specific_move' invisible="is_office_boardroom_order == True"/>
+                <field name='no_of_visitors' invisible="is_office_boardroom_order == False"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sale_order_renting_recurring" model="ir.ui.view">
+        <field name="name">sale.order.renting.recuuring</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="auto_rental.view_sale_order_renting_extended"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_recurring_rental']" position='attributes'>
+                <!-- <attribute >invisible="is_office_boardroom_order == True"</attribute> -->
+                <attribute name="invisible">is_office_boardroom_order == True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sview_partner_category_form_individual" model="ir.ui.view">
+        <field name="name">res.partner.category.individuals</field>
+        <field name="model">res.partner.category</field>
+        <field name="inherit_id" ref="base.view_partner_category_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position='after'>
+                <field name="is_individual"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_category_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.category.inherit</field>
+        <field name="model">res.partner.category</field>
+        <field name="inherit_id" ref="base.view_partner_category_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position='after'>
+                <field name="rank"/>
+            </xpath>
+        </field>
+    </record>
+
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@t-set='layout_document_title']/span[1]" position="before">
+            <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Tax</span>
+        </xpath>
+        <xpath expr="//p[@name='payment_communication']" position="attributes">
+            <attribute name="style">display:none !important;</attribute>
+        </xpath>
+        <!-- <xpath expr="//div[hasclass('mb-3')]//span[@name='payment_term']" position="attributes"> -->
+        <xpath expr="//div[hasclass('mb-3')]" position="attributes">
+
+            <attribute name="style">display:none !important;</attribute>
+        </xpath>
+    </template>
+</odoo>

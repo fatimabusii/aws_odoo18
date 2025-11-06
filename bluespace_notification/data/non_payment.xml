@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.cron" id="bluespace_cron_non_payment_manager">
+            <field name="name">Sales Manager Non Payment Notification on the 8th</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_non_payment_notification()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <!-- <field name="numbercall">-1</field> -->
+            <field name="nextcall" eval="(datetime.now() + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+
+        <record id="email_template_non_payment_manager" model="mail.template">
+            <field name="name">Sales Manager Non Payment Notification on the 8th</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Blue Spaces Customer Lock Out</field>
+            <field name="email_from">info@bluespaces.co.za</field>
+            <field name="email_to">{{ object.get_manager_email() }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;font-family: Calibri;">
+    <p style="margin: 0px; padding: 0px;">
+        Dear Blue Spaces Manager,
+        <br/><br/>
+        The following Customer has not paid his account and now needs to be locked out today.
+        <br/><br/>
+        <t t-set="non_payment_list" t-value="object.get_non_payment_list()"/>
+        <t t-if="non_payment_list">
+            <div style="margin: 0px; padding: 0px;">
+                <table width="100%" style="color: #454748; border-collapse: collapse; border: 1px solid black;">
+                    <tr style="border-bottom: 2px solid #dee2e6;">
+                        <td width="12%" align="center"><span style="font-weight:bold;">Sent by Odoo at</span></td>
+                        <td width="12%" align="center"><span style="font-weight:bold;">Customer Name</span></td>
+                        <td width="15%" align="center"><span style="font-weight:bold;">Customer Contact Number and email</span></td>
+                        <td width="10%" align="center"><span style="font-weight:bold;">Rental Space Type and number</span></td>
+                        <td width="10%" align="center"><span style="font-weight:bold;">Move In Date</span></td>
+                        <td width="10%" align="center"><span style="font-weight:bold;">Move Out Date</span></td>
+                        <td width="10%" align="center"><span style="font-weight:bold;">Amount Due</span></td>
+                    </tr>
+                    <tr t-foreach="non_payment_list" t-as="line">
+                        <td width="12%" align="center" t-esc="line['odoo_at']"></td>
+                        <td width="12%" align="center" t-esc="line['cust_name']"></td>
+                        <td width="15%" align="center" t-esc="line['phone_email']"></td>
+                        <td width="10%" align="center" t-esc="line['space_type']"></td>
+                        <td width="10%" align="center" t-esc="line['move_in_date']"></td>
+                        <td width="10%" align="center" t-esc="line['move_out_date']"></td>
+                        <td width="10%" align="center" t-esc="line['amt_due']"></td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+        <br/><br/>
+    </p>
+
+    <p style="margin:0px 0 12px 0;box-sizing:border-box;color:blue;"><font style="color: rgb(0, 32, 96);">Best regards,</font><br/><font style="color: rgb(0, 32, 96);">
+                                The Blue Spaces Team</font><br/></p><table style="box-sizing:border-box;border-collapse:collapse;caption-side:bottom;" cellspacing="0" cellpadding="0" border="0">
+                                    <tbody style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;">
+                                        <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;">
+                                            <td rowspan="6" style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;" align="center">
+                                                <img src="/bluespace_custom_16/static/src/img/bluespace.jpg" style="box-sizing: border-box; vertical-align: middle; width: 218px; height: 118px;" width="218" height="118"/>
+                                            </td>
+                                            <td style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;color:blue;">
+                                                <b style="box-sizing:border-box;font-weight:500;"><font style="color: rgb(0, 32, 96);"><strong style="box-sizing:border-box;font-weight:900;">The Blue Spaces Team</strong></font><br/><br/><font style="color: rgb(0, 32, 96);">(T):</font></b><font style="color: rgb(0, 32, 96);"> 021 300 0645<b style="box-sizing:border-box;font-weight:500;"><br/>(A):</b> 21 Conradie Cres, Asla Park, N2, Strand</font><b style="box-sizing:border-box;font-weight:500;"><br/><font style="color: rgb(0, 32, 96);"> (E):</font></b> <a href="mailto:info@bluespaces.co.za" target="_blank"><u><font style="color: rgb(5, 99, 193);">info@bluespaces.co.za</font></u></a><br/><b style="box-sizing:border-box;font-weight:500;"><font style="color: rgb(0, 32, 96);">(W):</font></b> <a href="http://www.bluespaces.co.za" target="_blank"><u><font style="color: rgb(5, 99, 193);">www.bluespaces.co.za</font></u></a><table style="box-sizing: border-box; border-collapse: collapse; caption-side: bottom; color: blue;">
+                                                    <tbody style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"><tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                </tbody></table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table><p style="margin-bottom: 0px;"><br/></p>
+
+</div></field>
+        </record>
+
+        <!-- Customer Move-out Notification -->
+        <record model="ir.cron" id="bluespace_cron_move_out_customer">
+            <field name="name">Customer Move-out Notification</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_move_out_customer()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <!-- <field name="numbercall">-1</field> -->
+            <field name="nextcall" eval="(datetime.now() + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+
+        <record id="email_template_move_out_customer" model="mail.template">
+            <field name="name">Customer Move-out Notification</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Important: Vacating Arrangements at Blue Spaces</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+        </record>
+
+        <!-- Customer Move-In Notification to Manager -->
+        <record model="ir.cron" id="bluespace_cron_move_in_customer_manager">
+            <field name="name">Customer Move-In Notification</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_move_in_customer_manager()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <!-- <field name="numbercall">-1</field> -->
+            <field name="nextcall" eval="(datetime.now() + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+
+        <record id="email_template_move_in_customer_manager" model="mail.template">
+            <field name="name">Customer Move-In Notification</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Blue Spaces Customer Move In</field>
+            <field name="email_from">info@bluespaces.co.za</field>
+            <field name="email_to">{{ object.get_manager_email() }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;font-family: Calibri;">
+    <p style="margin: 0px; padding: 0px;">
+        Dear Blue Spaces Manager,
+        <br/><br/>
+        Please find the below list of Move In Customer next month.
+        <br/><br/>
+        <t t-set="move_in_data" t-value="object.get_move_in_list()"/>
+        <t t-if="move_in_data">
+            <div style="margin: 0px; padding: 0px;">
+                <table width="100%" style="color: #454748; border-collapse: collapse; border: 1px solid black;">
+                    <tr style="border-bottom: 2px solid #dee2e6;">
+                        <td width="30%" align="center"><span style="font-weight:bold;">Rental Order No</span></td>
+                        <td width="30%" align="center"><span style="font-weight:bold;">Customer Name</span></td>
+                        <td width="30%" align="center"><span style="font-weight:bold;">Move In Date</span></td>
+                    </tr>
+                    <tr t-foreach="move_in_data" t-as="line">
+                        <td width="30%" align="center" t-esc="line['order_no']"></td>
+                        <td width="30%" align="center" t-esc="line['customer_name']"></td>
+                        <td width="30%" align="center" t-esc="line['move_in_date']"></td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+        <br/><br/>
+    </p>
+
+    <p style="margin:0px 0 12px 0;box-sizing:border-box;color:blue;"><font style="color: rgb(0, 32, 96);">Best regards,</font><br/><font style="color: rgb(0, 32, 96);">
+                                The Blue Spaces Team</font><br/></p><table style="box-sizing:border-box;border-collapse:collapse;caption-side:bottom;" cellspacing="0" cellpadding="0" border="0">
+                                    <tbody style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;">
+                                        <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;">
+                                            <td rowspan="6" style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;" align="center">
+                                                <img src="/bluespace_custom_16/static/src/img/bluespace.jpg" style="box-sizing: border-box; vertical-align: middle; width: 218px; height: 118px;" width="218" height="118"/>
+                                            </td>
+                                            <td style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;color:blue;">
+                                                <b style="box-sizing:border-box;font-weight:500;"><font style="color: rgb(0, 32, 96);"><strong style="box-sizing:border-box;font-weight:900;">The Blue Spaces Team</strong></font><br/><br/><font style="color: rgb(0, 32, 96);">(T):</font></b><font style="color: rgb(0, 32, 96);"> 021 300 0645<b style="box-sizing:border-box;font-weight:500;"><br/>(A):</b> 21 Conradie Cres, Asla Park, N2, Strand</font><b style="box-sizing:border-box;font-weight:500;"><br/><font style="color: rgb(0, 32, 96);"> (E):</font></b> <a href="mailto:info@bluespaces.co.za" target="_blank"><u><font style="color: rgb(5, 99, 193);">info@bluespaces.co.za</font></u></a><br/><b style="box-sizing:border-box;font-weight:500;"><font style="color: rgb(0, 32, 96);">(W):</font></b> <a href="http://www.bluespaces.co.za" target="_blank"><u><font style="color: rgb(5, 99, 193);">www.bluespaces.co.za</font></u></a><table style="box-sizing: border-box; border-collapse: collapse; caption-side: bottom; color: blue;">
+                                                    <tbody style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"><tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                    <tr style="border-style:solid;box-sizing:border-box;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;border-left-color:inherit;border-bottom-color:inherit;border-right-color:inherit;border-top-color:inherit;"></tr>
+                                                </tbody></table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table><p style="margin-bottom: 0px;"><br/></p>
+
+</div></field>
+        </record>
+    </data>
+</odoo>

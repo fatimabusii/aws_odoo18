@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data>
+        <record id="lease_confirm_wizard_form" model="ir.ui.view">
+            <field name="name">lease.confirm.wizard.form</field>
+            <field name="model">lease.confirm.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="is_office_boardroom_order" invisible="1"/>
+                        </group>
+                        <group string="1. Please note that for the safety of all customers, there is monitoring of unit contents and activity on the premises. Please confirm what you will use the unit for? " invisible="is_office_boardroom_order == True">
+                            <field name="unit_used_for_text" placeholder="Please select...(e.g. Self storage)" required="is_office_boardroom_order == False"/>
+                            <field name="other_info_unit" placeholder="Please fill in here:" required="unit_used_for_text == 'other'" invisible="unit_used_for_text != 'other'"/>
+                            <field name="other_info_description" placeholder="Please enter description" required="unit_used_for_text == 'other'" invisible="unit_used_for_text != 'other'"/>
+
+                            <field name="what_content_text" placeholder="Please select...(e.g. Household Goods)" required="is_office_boardroom_order == False"/>
+                            <field name="other_info_what" placeholder="Please fill in here:" required="what_content_text == 'other'" invisible="what_content_text != 'other'"/>
+                            <field name="other_description" placeholder="Please enter description" required="what_content_text == 'other'" invisible="what_content_text != 'other'"/>
+
+                            <field name="what_activity_occur" placeholder="Please select...(e.g. Storage)" required="is_office_boardroom_order == False"/>
+                            <field name="other_info_activity" placeholder="Please fill in here:" required="what_activity_occur == 'other'" invisible="what_activity_occur != 'other'"/>
+                            <field name="activity_description" placeholder="Please enter description" required="what_activity_occur == 'other'" invisible="what_activity_occur != 'other'"/>
+                        </group>
+                        <group string="2. Agree to Lease Agreement" invisible="is_office_boardroom_order == True">
+                            <div class="row" colspan="2" style="color:red !important;">
+                                Please read and accept all lease terms and conditions (read here) and specifically acknowledge that you are aware of the following important terms below, by ticking each item in the tick boxes provided:
+                            </div>
+                            <div class="row" colspan="2">
+                                <div>
+                                    <field name="lease_prepaid_water"/>
+                                    <label for="lease_prepaid_water" string="Prepaid water, sewerage and electricity (on non-solar powered plug circuits)"/>
+                                </div>
+                                <div>
+                                    <field name="lease_no_hazardous"/>
+                                    <label for="lease_no_hazardous" string="No hazardous, explosive, flammable (inclusive but not limited to fuel or gas) or waste materials to be brought onto site unless approved by management. Please click below to request approval (Have hazardous goods? Please describe them to us here for approval to avoid legal claims for undeclared hazardous goods brought onto the Property) "/>
+                                </div>
+                                <div>
+                                    <field name="lease_calendar_month"/>
+                                    <label for="lease_calendar_month" string="1 calendar month notice"/>
+                                </div>
+                                <div>
+                                    <field name="lease_refuse_access"/>
+                                    <label for="lease_refuse_access" string="Permission for us to refuse access if account not up to date"/>
+                                </div>
+                                <div>
+                                    <field name="lease_sell_goods"/>
+                                    <label for="lease_sell_goods" string="Permission to sell goods within 45 days of non-payment"/>
+                                </div>
+                                <div>
+                                    <field name="lease_lessors_hypotec"/>
+                                    <label for="lease_lessors_hypotec" string="Lessor’s hypotec over goods"/>
+                                </div>
+                                <div>
+                                    <field name="lease_not_insure"/>
+                                    <label for="lease_not_insure" string="We do not insure your contents inside the unit,please arrange your own insurance"/>
+                                </div>
+                                <div>
+                                    <field name="lease_nuisance"/>
+                                    <label for="lease_nuisance" string="If the Customer is a nuisance to other Customers, commits a Breach of the Agreeement or does not pay his account on time for more than two times, the Landlord may evict the Customer immediately or within 1 months notice"/>
+                                </div>
+                                <div>
+                                    <field name="lease_credit_check"/>
+                                    <label for="lease_credit_check" string="I/We concede to a credit check being conducted on me/us"/>
+                                </div>
+                                <div>
+                                    <field name="lease_accept_all"/>
+                                    <label for="lease_accept_all" string="I have read and accept all Terms and Conditions"/>
+                                </div>
+                            </div>
+                        </group>
+                        <group string="Note :" invisible="is_office_boardroom_order == False">
+                            <div class="row" colspan="2">
+                                <div>
+                                    <field name="lease_ofc_boardroom"/>
+                                    <label for="lease_ofc_boardroom" string="Please note permission is required if the office is desired to be used for any other purpose than an office/boardroom, e.g. functions, parties, conferencing, gatherings and the like , to do so click here or contact the manager at: 021 300 0645 or email info@bluespaces.co.za"/>
+                                </div>
+                            </div>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_submit" string="Submit"
+                               class="oe_highlight" type="object"/>
+                        <button special="cancel" data-hotkey="z" string="Cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="lease_confirm_wizard_action" model="ir.actions.act_window">
+            <field name="name">Lease Confirm</field>
+            <field name="res_model">lease.confirm.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>
