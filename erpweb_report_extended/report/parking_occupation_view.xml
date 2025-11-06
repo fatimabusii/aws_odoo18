@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="parking_occupation_report_graph_view" model="ir.ui.view">
+        <field name="name">parking.occupation.report.graph</field>
+        <field name="model">erpweb.parking.occupation.report</field>
+        <field name="arch" type="xml">
+            <graph string="Parking Bay Occupation" type="bar" sample="1">
+                <field name="date" interval="month"/>
+                <field name="percent_occupation" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="parking_occupation_report_view_tree" model="ir.ui.view">
+        <field name="name">erpweb.parking.occupation.report.tree</field>
+        <field name="model">erpweb.parking.occupation.report</field>
+        <field name="arch" type="xml">
+            <list string="Parking Bay Occupation">
+                <field name="date"/>
+                <field name="order_id" optional="hide"/>
+                <field name="product_category" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="parking_occupation_report_view_form" model="ir.ui.view">
+        <field name="name">erpweb.parking.occupation.report.form</field>
+        <field name="model">erpweb.parking.occupation.report</field>
+        <field name="arch" type="xml">
+            <form string="Parking Bay Occupation">
+                <group>
+                    <field name="date"/>
+                    <field name="order_id"/>
+                    <field name="product_category"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="parking_occupation_report_search_view" model="ir.ui.view">
+        <field name="name">erpweb.parking.occupation.report.search</field>
+        <field name="model">erpweb.parking.occupation.report</field>
+        <field name="arch" type="xml">
+            <search string="Parking Bay Occupation">
+                <field name="date"/>
+                <filter string="Date" name="year" date="date" invisible="1" default_period="year"/>
+                <separator/>
+                <group expand="1" string="Group By" name="report_group_by">
+                    <filter string="Date" name="Date" date="date" default_period="year"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_parking_occupation_report" model="ir.actions.act_window">
+        <field name="name">Bluespace Parking Bay Occupation</field>
+        <field name="res_model">erpweb.parking.occupation.report</field>
+        <field name="view_mode">graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data yet!
+            </p>
+            <p>
+                Create a new Rental Order!!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_parking_occupation_report"
+            name="Bluespace Parking Bay Occupation"
+            action="action_parking_occupation_report"
+            parent="menu_sale_analysis_report_one"
+            />
+</odoo>
