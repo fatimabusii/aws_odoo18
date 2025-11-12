@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="product_template_form_view_bluespace_size" model="ir.ui.view">
+        <field name="name">product.template.inherit.bluespace.size</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="website_sale.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='website_ribbon_id']" position="after">
+                <field name="prd_size"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='additional_product_tag_ids']" position="after">
+                <field name="location_name" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="rental_report_pivot_view" model="ir.ui.view">
+        <field name="name">erpweb.sale.rental.report.pivot</field>
+        <field name="model">erpweb.sale.rental.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Bluespace Analysis" sample="1">
+                <field name="date" interval="month" type="col"/>
+                <field name="order_id" type="row"/>
+                <field name="move_in_date" type="row" invisible="1"/>
+                <field name="move_out_date" type="row" invisible="1"/>
+                <field name="quantity" type="measure" invisible="1"/>
+                <field name="qty_delivered" type="measure" invisible="1"/>
+                <field name="percent_occupation" type="measure" invisible="1"/>
+                <field name="price" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="rental_report_graph_view" model="ir.ui.view">
+        <field name="name">erpweb.sale.rental.report.graph</field>
+        <field name="model">erpweb.sale.rental.report</field>
+        <field name="arch" type="xml">
+            <graph string="Bluespace Analysis" type="line" sample="1">
+                <field name="date" interval="month"/>
+                <field name="percent_occupation" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="sale_rental_report_view_tree" model="ir.ui.view">
+        <field name="name">erpweb.sale.rental.report.view.tree</field>
+        <field name="model">erpweb.sale.rental.report</field>
+        <field name="arch" type="xml">
+            <list string="Bluespace Analysis">
+                <field name="date"/>
+                <field name="move_in_date"/>
+                <field name="move_out_date"/>
+                <field name="order_id" optional="hide"/>
+                <field name="partner_id" optional="show"/>
+                <field name="product_id" optional="show"/>
+                <field name="product_category" optional="hide"/>
+                <field name="user_id" optional="show" widget="many2one_avatar_user"/>
+                <field name="company_id" optional="show" groups="base.group_multi_company"/>
+                <field name="currency_id" optional="show" invisible="1"/>
+                <field name="quantity" optional="show" sum="Sum of Daily Ordered Qty"/>
+                <field name="qty_delivered" optional="hide" sum="Sum of Daily Picked-Up Qty"/>
+                <field name="price" optional="show" widget="monetary" sum="Sum of Daily Amount"/>
+                <field name="state" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="rental_report_search_view" model="ir.ui.view">
+        <field name="name">erpweb.sale.rental.report.search</field>
+        <field name="model">erpweb.sale.rental.report</field>
+        <field name="arch" type="xml">
+            <search string="Bluesapce Analysis">
+                <field name="date"/>
+                <filter string="Date" name="year" invisible="1" date="date" default_period="year"/>
+                <filter name="Quotations" string="Quotations" domain="[('state','in', ['draft', 'sent'])]"/>
+                <filter name="confirmed_orders" string="Confirmed Orders" domain="[('state', 'in', ['sale', 'done'])]"/>
+                <separator/>
+                <filter name="filter_date" date="date" default_period="year"/>
+                <filter string="Current Month Move In" name="curr_move_in" domain="[('date','&lt;',(context_today()+relativedelta(months=1)).strftime('%%Y-%%m-01')), ('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="Current Month Move Out" name="curr_move_out" domain="[('move_out_date','&lt;',(context_today()+relativedelta(months=1)).strftime('%%Y-%%m-01')), ('move_out_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <separator/>
+                <filter name="is_flexible" string="Flexible(M2M)" domain="[('is_flexible', '=', True)]"/>
+                <filter name="is_specific_move" string="Specific Move Out" domain="[('is_specific_move', '=', True)]"/>
+                <filter name="is_office_boardroom_order" string="Office/Boardroom Order" domain="[('is_office_boardroom_order', '=', True)]"/>
+                <filter name="notice_given" string="Notice Given" domain="[('notice_given', '=', True)]"/>
+                <filter name="is_approved_order" string="Need Order Confirmation" domain="[('is_approved_order', '=', True)]"/>
+                <filter name="is_paid" string="Paid" domain="[('is_paid', '=', True)]"/>
+                <filter name="not_paid" string="Not Paid" domain="[('is_paid', '=', False)]"/>
+                <field name="product_id"/>
+                <field name="product_tmpl_id" groups="product.group_product_variant"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="product_category"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <group expand="1" string="Group By" name="report_group_by">
+                    <filter string="Location" name="location" context="{'group_by':'location_name'}"/>
+                    <filter string="Product Category" name="Category" context="{'group_by':'product_category'}"/>
+                    <filter string="Size" name="product_size" context="{'group_by':'product_size'}"/>
+                    <filter string="Product" name="product" context="{'group_by':'default_code'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rental_report_one" model="ir.actions.act_window">
+        <field name="name">Bluespace Rental Analysis</field>
+        <field name="res_model">erpweb.sale.rental.report</field>
+        <field name="view_mode">pivot,gantt</field>
+        <!--  <field name="search_view_id" ref="rental_report_search_view"/> -->
+        <field name="context">{'search_default_location':1, 'search_default_Category':1, 'search_default_product_size':1, 'search_default_product':1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data yet!
+            </p>
+            <p>
+                Create a new rental order
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_rental_reportingg"
+            name="Bluespace Rental Analysis"
+            action="action_rental_report_one"
+            parent="menu_sale_analysis_report_one"
+            sequence="2"/>
+
+    <record id="rental_schedule_bluespace_gantt_view" model="ir.ui.view">
+        <field name="name">erpweb.sale.rental.report.gantt</field>
+        <field name="model">erpweb.sale.rental.report</field>
+        <field name="arch" type="xml">
+            <gantt string="Rental"
+                date_start="move_in_date"
+                date_stop="move_out_date"
+                default_group_by="product_category"
+                create="0"
+                edit="false"
+                color="color"
+                pill_label="True"
+                sample="1">
+                <field name="allocated_hours"/>
+                <templates>
+                    <div t-name="gantt-popover">
+                        <!-- <div>
+                            <strong>Order # — </strong> <t t-field="name"/>
+                        </div> -->
+                        <div>
+                            <strong>Move In  — </strong> <t t-out="userTimezoneStartDate.format('L LT')"/>
+                        </div>
+                        <div>
+                            <strong>Move Out — </strong> <t t-out="userTimezoneStopDate.format('L LT')"/>
+                        </div>
+                    </div>
+                </templates>
+            </gantt>
+        </field>
+    </record>
+
+</odoo>

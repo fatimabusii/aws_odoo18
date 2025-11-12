@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="partner_form_custom" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//page[@name='other_information']/group[1]" position="after">
+                <group name="extra_info" string="Search keyword">
+                    <group>
+                        <field name="unit_used_for_text"/>
+                        <field name="what_content_text"/>
+                        <field name="what_activity_occur"/>
+                    </group>
+                    <group>
+                        <field name="other_info_unit"/>
+                        <field name="other_info_description"/>
+                        <field name="other_info_what"/>
+                        <field name="other_description"/>
+                        <field name="other_info_activity"/>
+                        <field name="activity_description"/>
+                    </group>
+                </group>
+                <group name="all_lease">
+                    <field name="all_lease_agreement" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,1498 @@
+<?xml version="1.0"?>
+<odoo>
+    <!-- <template id="products_attributes_inherit" inherit_id="website_sale.products" active="True" name="Attributes &amp; Variants filters">
+        <xpath expr="//div[hasclass('o_wsale_products_grid_table_wrapper')]" position="before">
+            <div id="wsale_products_attributes_collapse"
+                 class="position-relative mobile_attribute">
+                <form t-if="attributes" class="js_attributes position-relative mb-2" method="get">
+                    <input t-if="category" type="hidden" name="category" t-att-value="category.id" />
+                    <input type="hidden" name="search" t-att-value="search" />
+                    <input type="hidden" name="order" t-att-value="order"/>
+                    <a t-if="attrib_values" t-att-href="keep('/shop'+ ('/category/'+slug(category)) if category else None, attrib=0)" t-attf-class="btn btn-{{navClass}} d-flex py-1 mb-2">
+                        <small class="mx-auto"><b>Clear Filters</b></small>
+                        <i class="oi oi-close"/>
+                    </a>
+                    <t t-foreach="attributes" t-as="a">
+                        <div class="accordion-item nav-item mb-1" t-if="a.value_ids">
+                                <t t-set="att_value_ids" t-value="[]"/>
+                                <div>
+                                    <t t-foreach="search_product" t-as="p">
+                                        <t t-set="att1" 
+                                            t-value="request.env['product.template.attribute.value']
+                                            .search([('product_tmpl_id', '=', p.id), ('attribute_id.name', '=', 'Size')])
+                                            .mapped('name')"/>
+                                        <t t-foreach="request.env['product.attribute.value']
+                                            .search([('name', 'in', att1)]).mapped('id')" t-as="av_id">
+                                            <t t-if="av_id not in att_value_ids">
+                                                <t t-set="att_value_ids" t-value="att_value_ids + [av_id]"/>
+                                            </t>
+                                        </t>
+                                    </t>
+                            </div>
+                            <div class="row">
+                                <div style="width: 35%;padding-top: 10px;">
+                                    <h6>
+                                        <b t-field="a.name"/>
+                                    </h6>
+                                </div>
+                                <div t-attf-id="o_products_attributes_{{a.id}}" style="width: 65%;">
+                                    <t t-if="a.display_type == 'select'">
+                                        <select class="form-select css_attribute_select" name="attrib">
+                                           
+                                            <t t-if="a.name == 'Size'">
+                                                <option value="">All sizes</option>
+                                            </t>
+                                            <t t-if="a.name == 'Type of Unit'">
+                                                <option value="">All type of units</option>
+                                            </t>
+                                            <t t-if="a.name == 'Size'">                                
+                                                <t t-foreach="a.value_ids" t-as="v">
+                                                    <t t-foreach="att_value_ids" t-as="av">
+                                                        <t t-if="av == v.id">
+                                                            <option t-att-value="'%s-%s' % (a.id,v.id)" selected="true" t-att-selected="v.id in attrib_set">
+                                                                <t t-esc="v.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-foreach="a.value_ids" t-as="v">
+                                                    <option t-att-value="'%s-%s' % (a.id,v.id)" selected="true" t-att-selected="v.id in attrib_set">
+                                                        <t t-esc="v.name"/>
+                                                    </option>
+                                                </t>
+                                            </t>
+                                        </select>
+                                    </t>
+                                    <t t-if="a.display_type == 'radio' or a.display_type == 'pills'">
+                                        <div class="flex-column mb-3">
+                                            <t t-foreach="a.value_ids" t-as="v">
+                                                <div class="form-check mb-1">
+                                                    <input type="checkbox" name="attrib" class="form-check-input" t-att-id="'%s-%s' % (a.id,v.id)" t-att-value="'%s-%s' % (a.id,v.id)" t-att-checked="'checked' if v.id in attrib_set else None"/>
+                                                    <label class="form-check-label fw-normal" t-att-for="'%s-%s' % (a.id,v.id)" t-field="v.name"/>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    <div t-if="a.display_type == 'color'" class="mb-3">
+                                        <t t-foreach="a.value_ids" t-as="v">
+                                            <label t-attf-style="background-color:#{v.html_color or v.name}" t-attf-class="css_attribute_color mb-1 #{'active' if v.id in attrib_set else ''}">
+                                                <input type="checkbox" name="attrib" t-att-value="'%s-%s' % (a.id,v.id)" t-att-checked="'checked' if v.id in attrib_set else None" t-att-title="v.name" />
+                                            </label>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </form>
+            </div>
+        </xpath>
+    </template> -->
+
+    <template id="website_0auth_signup_login" inherit_id="auth_signup.login" name="Sign up">
+            <xpath expr="//a[@t-if='signup_enabled']" position="replace">
+                <div class="justify-content-between mt-2 d-flex small">
+                    <a t-if="signup_enabled" t-attf-href="/web/signup?{{ keep_query() }}"></a>
+                </div>
+            </xpath>
+    </template>
+
+    <record id="product_template_one_day_rent" model="ir.ui.view">
+        <field name="name">product.template.one.day.rent</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='purchase']//group//field[@name='uom_po_id']" position="after">
+                <field name="one_day_rent"/>
+                <field name="is_available"/>
+            </xpath>
+            <xpath expr="//page[@name='sales']/group[@name='sale']//field[@name='website_ribbon_id']" position="replace">
+                <field name="website_ribbon_id" string="Product Availability" options="{'no_quick_create': True}"/>
+            </xpath>
+            <xpath expr="//div[@name='options']" position="inside">
+                <span class="d-inline-block">
+                    <field name="is_office"/>
+                    <label for="is_office"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_boardroom"/>
+                    <label for="is_boardroom"/>
+                </span>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_search_view_category" model="ir.ui.view">
+        <field name="name">product.template.search.category.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="categ_id" position="replace">
+                <filter string="Product Category" name="categ_id" context="{'group_by':'categ_id'}" invisible="1"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="sale_order_inherit_visitors" model="ir.ui.view">
+        <field name="name">sale.order.visitors</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']/group[last()]" position="after">
+                <group name="visitors" string="Visitors Information">
+                    <group>
+                        <field name="ofc_visitors">
+                            <list>
+                                <field name="cell_phone"/>
+                                <field name="sale_id" invisible="1"/>
+                            </list>
+                        </field>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//page[@name='other_information']//field[@name='tag_ids']" position="after">
+                <!-- <field name="free_office"/>
+                <field name="free_boardroom"/> -->
+                <field name="is_paid" readonly="1"/>
+            </xpath>
+            <xpath expr="//page[@name='order_lines']//field[@name='order_line']//list//field[@name='product_template_id']" position="attributes">
+                <attribute name="domain">
+                    [('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id), ('is_available', '=', True)]
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit the existing rental order primary form view -->
+    <record id="rental_order_primary_form_view_inherit" model="ir.ui.view">
+        <field name="name">rental.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Modify the domain for product_id in order lines -->
+            <xpath expr="//notebook/page[@name='order_lines']/field/list/field[@name='product_id']" position="attributes">
+                <attribute name="domain">
+                    ['|', ('sale_ok', '=', True), ('rent_ok', '=', True),
+                        '|', ('company_id', '=', False), ('company_id', '=', parent.company_id),('available_now', '=', True)]
+                </attribute>
+            </xpath>
+            <!-- Modify the domain for product_template_id in order lines -->
+            <xpath expr="//notebook/page[@name='order_lines']/field/list/field[@name='product_template_id']" position="attributes">
+                <attribute name="domain">
+                    ['|', ('sale_ok', '=', True), ('rent_ok', '=', True),
+                        '|', ('company_id', '=', False), ('company_id', '=', parent.company_id), ('available_now', '=', True)]
+                </attribute>
+            </xpath>
+            <!-- Modify the domain for product_id in the form inside order_line field -->
+            <xpath expr="//field[@name='order_line']//form//field[@name='product_id']" position="attributes">
+                <attribute name="domain">
+                    ['|', ('sale_ok', '=', True), ('rent_ok', '=', True),
+                        '|', ('company_id', '=', False), ('company_id', '=', parent.company_id), ('available_now', '=', True)]
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+   
+    <!-- <template id="product_attributes" inherit_id="website_sale.products_attributes" name="product attribute attachments">
+        <xpath expr="//t[@t-as='a']//div" position="replace">
+            <div class="accordion-item nav-item mb-1" t-if="a.value_ids">
+                <t t-set="att_value_ids" t-value="[]"/>
+                <div>
+                 <t t-foreach="search_product" t-as="p">
+                    <t t-set="att1" 
+                        t-value="request.env['product.template.attribute.value']
+                        .search([('product_tmpl_id', '=', p.id), ('attribute_id.name', '=', 'Size')])
+                        .mapped('name')"/>
+                    <t t-foreach="request.env['product.attribute.value']
+                        .search([('name', 'in', att1)]).mapped('id')" t-as="av_id">
+                        <t t-if="av_id not in att_value_ids">
+                            <t t-set="att_value_ids" t-value="att_value_ids + [av_id]"/>
+                        </t>
+                    </t>
+                </t>
+                </div>
+                <h6 class="mb-3">
+                    <b class="o_products_attributes_title d-none d-lg-block" t-field="a.name"/>
+                </h6>
+                <div t-attf-id="o_products_attributes_{{a.id}}" class="">
+                    <t t-if="a.display_type == 'select'">
+                        <select class="form-select css_attribute_select mb-2" name="attrib">
+                            <t t-if="a.name == 'Size'">
+                                <option value="">All sizes</option>
+                            </t>
+                            <t t-if="a.name == 'Type of Unit'">
+                                <option value="">All type of units</option>
+                            </t>
+                            <t t-if="a.name == 'Size'">                                
+                                <t t-foreach="a.value_ids" t-as="v">
+                                    <t t-foreach="att_value_ids" t-as="av">
+                                        <t t-if="av == v.id">
+                                            <option t-att-value="'%s-%s' % (a.id,v.id)" selected="true" t-att-selected="v.id in attrib_set">
+                                                <t t-esc="v.name"/>
+                                            </option>
+                                        </t>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="a.value_ids" t-as="v">
+                                    <option t-att-value="'%s-%s' % (a.id,v.id)" selected="true" t-att-selected="v.id in attrib_set">
+                                        <t t-esc="v.name"/>
+                                    </option>
+                                </t>
+                            </t>
+                        </select>
+                    </t>
+                    <t t-if="a.display_type == 'radio' or a.display_type == 'pills'">
+                        <div class="flex-column mb-3">
+                            <t t-foreach="a.value_ids" t-as="v">
+                                <div class="form-check mb-1">
+                                    <input type="checkbox" name="attrib" class="form-check-input" t-att-id="'%s-%s' % (a.id,v.id)" t-att-value="'%s-%s' % (a.id,v.id)" t-att-checked="'checked' if v.id in attrib_set else None"/>
+                                    <label class="form-check-label fw-normal" t-att-for="'%s-%s' % (a.id,v.id)" t-field="v.name"/>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <div t-if="a.display_type == 'color'" class="mb-3">
+                        <t t-foreach="a.value_ids" t-as="v">
+                            <label t-attf-style="background-color:#{v.html_color or v.name}" t-attf-class="css_attribute_color mb-1 #{'active' if v.id in attrib_set else ''}">
+                                <input type="checkbox" name="attrib" t-att-value="'%s-%s' % (a.id,v.id)" t-att-checked="'checked' if v.id in attrib_set else None" t-att-title="v.name" />
+                            </label>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            
+        </xpath>
+    </template> -->
+
+    <!-- Insert the floor map modals globally -->
+    <template id="floor_map_modals" inherit_id="web.frontend_layout">
+        <xpath expr="//div[@id='wrapwrap']/main" position="before">
+            <t t-call="bluespace_custom_16.floor_map_modals"/>
+        </xpath>
+    </template>
+
+
+    <!-- <template id="floor_map_modals_content">
+        <div class="modal fade" id="warehouse_box" tabindex="-1" role="dialog"
+            style="z-index:2000; display:none; position:fixed; top:0; left:0; width:20%; height:30%; overflow:auto;">
+            <div class="modal-dialog" style="margin:5% auto; max-width:90%;">
+                <div class="modal-content" style="position:relative; z-index:2001;">
+                    <div class="modal-body">
+                        <img src="bluespace_custom_16/static/src/description/image/warehouse.png"
+                            oncontextmenu="return false;" style="width:100%; display:block;"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="warehouse_close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="office_box" tabindex="-1" role="dialog"
+            style="z-index:2000; display:none; position:fixed; top:0; left:0; width:30%; height:30%; overflow:auto;">
+            <div class="modal-dialog" style="margin:5% auto; max-width:90%;">
+                <div class="modal-content" style="position:relative; z-index:2001;">
+                    <div class="modal-body">
+                        <img src="bluespace_custom_16/static/src/description/image/office.png"
+                            oncontextmenu="return false;" style="width:100%; display:block;"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="office_close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="vehicle_box" tabindex="-1" role="dialog"
+            style="z-index:2000; display:none; position:fixed; top:0; left:0; width:40%; height:40%; overflow:auto;">
+            <div class="modal-dialog" style="margin:5% auto; max-width:90%;">
+                <div class="modal-content" style="position:relative; z-index:2001;">
+                    <div class="modal-body">
+                        <img src="bluespace_custom_16/static/src/description/image/vehicle.png"
+                            oncontextmenu="return false;" style="width:100%; display:block;"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="vehicle_close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="boardroom_box" tabindex="-1" role="dialog"
+            style="z-index:2000; display:none; position:fixed; top:0; left:0; width:50%; height:50%; overflow:auto;">
+            <div class="modal-dialog" style="margin:5% auto; max-width:90%;">
+                <div class="modal-content" style="position:relative; z-index:2001;">
+                    <div class="modal-body">
+                        <img src="bluespace_custom_16/static/src/description/image/office.png"
+                            oncontextmenu="return false;" style="width:100%; display:block;"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="boardroom_close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template> -->
+    <template id="floor_map_modals" inherit_id="web.frontend_layout">
+        <xpath expr="//div[@id='wrapwrap']/main" position="before">
+            
+            <!-- Warehouse Modal -->
+            <div class="modal fade floor-map-modal" id="warehouse_box" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-0">
+                            <img src="/bluespace_custom_16/static/src/description/image/warehouse.png"
+                                onContextMenu="return false;" style="width: 100%; display:block;"/>
+                        </div>
+                        <div class="modal-footer p-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Office Modal -->
+            <div class="modal fade floor-map-modal" id="office_box" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-0">
+                            <img src="/bluespace_custom_16/static/src/description/image/office.png"
+                                onContextMenu="return false;" style="width: 100%; display:block;"/>
+                        </div>
+                        <div class="modal-footer p-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Modal -->
+            <div class="modal fade floor-map-modal" id="vehicle_box" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-0">
+                            <img src="/bluespace_custom_16/static/src/description/image/vehicle.png"
+                                onContextMenu="return false;" style="width: 100%; display:block;"/>
+                        </div>
+                        <div class="modal-footer p-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boardroom Modal -->
+            <div class="modal fade floor-map-modal" id="boardroom_box" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-0">
+                            <img src="/bluespace_custom_16/static/src/description/image/office.png"
+                                onContextMenu="return false;" style="width: 100%; display:block;"/>
+                        </div>
+                        <div class="modal-footer p-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </xpath>
+    </template>
+
+
+
+ 
+
+    <template id="product_attachments" inherit_id="website_sale.products" name="product attachments">
+        <xpath expr="//button[@data-bs-toggle='offcanvas']" position="attributes">
+            <attribute name="t-attf-class" add="d-none" separator=" "/>
+        </xpath>
+        <xpath expr="//div[contains(@t-attf-class, 'products_attributes_filters')]" position="after">
+            <!-- <div class="modal fade" id="warehouse_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+             
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="bluespace_custom_16/static/src/description/image/warehouse.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="warehouse_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="office_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+   
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="office_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="vehicle_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+         
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="bluespace_custom_16/static/src/description/image/vehicle.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="vehicle_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="boardroom_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="boardroom_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div> -->
+
+
+            
+            <t t-if = "4 in attrib_set">
+                <a id="warehouse" data-toggle="modal" data-target="#myModal">
+                   <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Warehouse Floor Map try 1</b>
+                </a><br/>   
+                       
+            </t>
+            <t t-elif = "5 in attrib_set">
+                <a id="office" data-toggle="modal" data-target="#myModal">
+                   <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Office Floor Map</b>
+                </a><br/>
+            </t>
+            <t t-elif = "7 in attrib_set">
+                <a id="vehicle" data-toggle="modal" data-target="#myModal">
+                   <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Vehicle Storage Site Map</b>
+                </a><br/>
+            </t>
+            <t t-elif = "6 in attrib_set">
+                <a id="boardroom" data-toggle="modal" data-target="#myModal">
+                   <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Boardroom Floor Map</b>
+                </a>
+            </t>
+            <t t-else="">
+                <a id="warehouse_link" data-modal="warehouse_box" class="modal-link">
+                    <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Warehouse Floor Map modal</b>
+                </a><br/>
+
+                <a id="office_link" data-modal="office_box" class="modal-link">
+                    <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Office Floor Map modal</b>
+                </a><br/>
+
+                <a id="vehicle_link" data-modal="vehicle_box" class="modal-link">
+                    <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Vehicle Storage Site Map modal</b>
+                </a><br/>
+
+                <a id="boardroom_link" data-modal="boardroom_box" class="modal-link">
+                    <b style="color:#871D3D;cursor:pointer;" class="blink_me">Click here for Boardroom Floor Map modal</b>
+                </a>
+            </t>
+
+        </xpath>
+        <xpath expr="//div[@t-else='']" position="replace">           
+            <div t-else="" class="text-center text-muted mt128 mb256">
+                <t t-if="not search">
+                    <h3 class="mt8">Sorry, we are fully booked for the next 60 days, but may have availability thereafter, please contact us here or at 021 300 0645 or info@bluepaces.co.za. We'd love to accommodate you as soon as we can.</h3>
+                    <!-- <p t-if="category">No product defined in category "<strong t-esc="category.display_name"/>".</p> -->
+                </t>
+                <t t-else="">
+                    <h3 class="mt8">Sorry, we are fully booked for the next 60 days, but may have availability thereafter, please contact us here or at 021 300 0645 or info@bluepaces.co.za. We'd love to accommodate you as soon as we can.</h3>
+                    <!-- <p>No results for "<strong t-esc='search'/>"<t t-if="category"> in category "<strong t-esc="category.display_name"/>"</t>.</p> -->
+                </t>
+            </div>
+        </xpath>
+        <!-- <xpath expr="//div[hasclass('products_pager')]" position="replace">
+            <div class="products_pager d-flex justify-content-center pt-5 pb-3">
+            </div>
+        </xpath> -->
+    </template>
+
+    <template id="product_map" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_detail_main']/div" position="inside">
+            <div class="modal fade" id="warehouse_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/warehouse.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="warehouse_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="office_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="office_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="vehicle_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/vehicle.png" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="vehicle_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="boardroom_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="boardroom_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="text-center">
+                
+                    <t t-if="'Warehouse' in product.name">
+                        <a id="warehouse" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Warehouse Floor Map try 3</b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Office' in product.name">
+                        <a id="office" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Office Floor Map </b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Shaded' in product.name or 'Unshaded' in product.name">
+                         <a id="vehicle" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Vehicle Storage Site Map</b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Boardroom' in product.name">
+                        <a id="boardroom" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Boardroom Floor Map </b>
+                        </a>
+                    </t>
+            </div>
+        </xpath>
+
+    </template>
+
+    <template id="cart_summary_inherit" inherit_id="website_sale.cart_lines" name="product cart summary">
+         <xpath expr="//div[@id='cart_products']//div" position="attributes">
+            <attribute name="t-if">not line.product_id.recurring_invoice</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('flex-grow-1')]" position="replace">
+            <div class='flex-grow-1'>
+                <div>
+                    <strong t-field="line.name_short" />
+                    <t t-if="line.product_id.default_code"> [ <strong style="#007882 !important;" t-field="line.product_id.default_code"/> ]</t>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='cart_products']" position="after">
+            <div class="modal fade" id="warehouse_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/warehouse.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="warehouse_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="office_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="office_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="vehicle_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/vehicle.png" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="vehicle_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="boardroom_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="boardroom_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div name="attach_product_pdf">
+                <t t-foreach="website_sale_order.website_order_line" t-as="line">
+                    <t t-if="'Warehouse' in line.product_id.name">
+                        <a id="warehouse" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Warehouse Floor Map try 4</b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Office' in line.product_id.name">
+                        <a id="office" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Office Floor Map </b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Shaded' in line.product_id.name or 'Unshaded' in line.product_id.name">
+                         <a id="vehicle" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Vehicle Storage Site Map</b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Boardroom' in line.product_id.name">
+                        <a id="boardroom" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Boardroom Floor Map </b>
+                        </a>
+                    </t>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="rental_product_inherit" inherit_id="website_sale.product" name="Move In and Move Out Date">
+        <xpath expr="//div[hasclass('js_main_product')]/t[@t-placeholder='select']" position="inside">
+            <input id="product_cat_id" type="hidden" class="product_cat_id" name="product_cat_id" t-att-value="product_variant.categ_id.id" />
+            <input id="product_is_office" type="hidden" class="product_is_office" name="product_is_office" t-att-value="product_variant.is_office" />
+            <input id="product_is_boardroom" type="hidden" class="product_is_boardroom" name="product_is_boardroom" t-att-value="product_variant.is_boardroom" />
+            <input id="product_name" type="hidden" class="product_name" name="product_name" t-att-value="product" />
+            <input id="date_of_invoice" type="hidden" class="date_of_invoice" name="date_of_invoice" t-att-value="product_variant.env.user.company_id.date_of_invoice"/>
+        </xpath>
+        <xpath expr="//div[hasclass('js_main_product')]/t[@t-placeholder='select']" position="after">
+            <t t-call="bluespace_custom_16.filter_move_in_date"/>
+            <div id="product_attributes_size">
+                <t t-set="size_value" t-value="product.valid_product_template_attribute_line_ids._prepare_single_value_for_display()"/>
+                <table>
+                    <t t-foreach="size_value" t-as="attribute">
+                        <tr>
+                            <td>
+                                <t t-if="attribute.name == 'Size'">
+                                    <input id="product_size" type="hidden" class="product_size" name="product_size" t-att-value="size_value[attribute].product_template_value_ids.name" />
+                                </t>
+                        
+                            </td>
+                        </tr>
+                    </t>
+                </table>
+            </div>
+        </xpath>
+        <!-- <xpath expr="//div[hasclass('o_renting_details')]" position="replace">
+            <div class="h4 o_renting_details my-2 col-md-8 ps-0 d-flex justify-content-between">
+                <div>                  
+                    <strong>
+                        <span class="o_renting_duration_rantal" t-esc="combination_info['month_days']"/>
+                    </strong>                   
+                </div>
+                <div>
+                    Total
+                    <strong>
+                        <span class="oe_price o_renting_total_price" style="white-space: nowrap;display: contents;"
+                              t-esc="combination_info['current_rental_price']"
+                              t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                    </strong>
+                </div>
+            </div>
+        </xpath> -->
+    </template>
+    <!-- <template id="confirmation_inherit" inherit_id="website_sale.confirmation" name="Discard order summary">
+        <xpath expr="//div[hasclass('col-xl-auto')]" position="replace"></xpath>
+    </template> -->
+
+    <template id="filter_move_in_date">
+        <div class="form-group">
+            <table>                
+                <tr>               
+                    <td>
+                        <div t-owl="true" class="input-group datetime o_website_move_in_picker col-3"
+                             id="datetimepickerID"
+                             t-att-data-move-in-date="request.session.get('move_in_date', '')"
+                             data-target-input="nearest">
+                            <input class="form-control move_in_date" type='text' id='MoveInDate' name='move_in_date' placeholder="Move In Date"/>
+                            <i class="date-icon fa fa-calendar"></i>
+                        </div>            
+                   
+                    </td>
+                    <td t-if="product.is_office or product.is_boardroom">
+                        <div class="col-sm">
+                            <!-- <label class="col-form-label" for="start_hours">Hr</label> -->
+                            <select id="start_hours" name="start_hours"  class="form-control s_website_form_input start_hours">
+                                <option value="00">00</option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07" selected="True">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td t-if="product.is_office or product.is_boardroom">
+                        <div class="col-sm">
+                            <select class="form-control s_website_form_input start_minits" id="start_minits" name="start_minits">
+                                <option value="00">00</option>
+                                <option value="30" selected="True">30</option>
+                            </select>
+                        </div>
+                    </td>               
+                </tr>
+                <tr>
+                    <td t-if="product.is_office or product.is_boardroom">
+                        <div class="input-group datetime o_website_move_out_ofc_picker col-3"
+                             id="datetimepickerIDOfcend"
+                             t-att-data-move-in-date="request.session.get('move_out_date_ofc', '')"
+                             data-target-input="nearest">
+                            <input class="form-control move_out_date_ofc" type='text' id='MoveOutDateOfc' name='move_out_date_ofc' placeholder="Move out Date"/>
+                            <i class="date-icon fa fa-calendar"></i>
+                        </div>
+            
+                    </td>
+                    <td t-if="product.is_office or product.is_boardroom">
+                        <div class="col-sm">                       
+                            <select id="end_hours" name="end_hours"  class="form-control s_website_form_input end_hours">
+                                <option value="00">00</option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18" selected="True">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td t-if="product.is_office or product.is_boardroom">
+                        <div class="col-sm">                       
+                            <select class="form-control s_website_form_input end_minits" id="end_minits" name="end_minits">
+                                <option value="00" selected="True">00</option>
+                                <option value="30">30</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr t-if="product.is_office or product.is_boardroom">
+                    <!-- <td>
+                        <div class="col-sm">
+                            How many Persons ?
+                        </div>
+                    </td> -->
+                    <td>
+                        <div class="col-sm">
+                            <input class="form-control ofc_person" type='number' id='OfcPerson' name='ofc_person' placeholder="How many Persons ?" min="0" max="17"/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <span style="color:red;" id="display"></span> <br/>
+            <span style="color:red;" id="office_display"></span> <br/>
+            <span style="color:red;" id="person_display"></span> <br/>
+            <t t-if="not product.is_office and not product.is_boardroom">
+                <!-- <span style="color:red;" id="display"></span> <br/> -->
+                <span style="color:red;">Tick at least one option</span> <br/>
+                <label id='is_move_out_date'><input type="checkbox" name="is_move_out_date" id="flexible_move_out_date"> <strong>Flexible Lease / with 1 calendar month notice</strong></input></label><br/>
+                <p style="color:black;" id="flexible_note">
+                    A flexible lease is a month to month lease, which can be terminated at any time by means of a
+                    written, 1 calendar month notice to vacate.
+                </p>
+
+                <label id="is_no_move_out_date">
+                <input type="checkbox" name="is_no_move_out_date" class="flexible_move_out_date" id="no_flexible_move_out_date"> <strong>Specific Move Out Date (Last day of the selected month)</strong></input></label><br/>
+            </t>
+
+            <table>                
+                <tr>
+                    <td t-if="not product.is_office and not product.is_boardroom">
+                        <div t-owl="true" class="input-group datetime o_website_move_out_picker col-3" id="datetimepickerIDend" data-target-input="nearest">
+                            <input class="form-control move_out_date" type='text' id='MoveOutDate' name='move_out_date' placeholder="Move Out Date"/>
+                            <i class="date-icon fa fa-calendar"></i>
+
+                        </div>
+           
+                        
+                    </td>
+                </tr>
+            </table>
+
+            <p style="color:red" id="specific_move">
+               If you select a specific move-out date, we cannot guarantee availability after this date as another customer may book your unit one day after your selected move-out date.
+            </p>
+
+            <span style="color:red;" id="specific_one_month"></span> <br/>
+        </div>
+    </template>
+
+    <template id = "website_address_inherit" inherit_id="website_sale.address">
+        <xpath expr="//div[hasclass('oe_cart')]//div//t" position="replace">
+            <t t-if="mode == ('new', 'billing')">
+                <h2 class="o_page_header mt8">
+                    <!-- <span t-if="account_on_checkout != 'mandatory'">Create Account</span> -->
+                    <!-- <t t-set="website_office_boardroom" t-value="website_sale_order.is_office_boardroom_product()"/>
+                    <a t-if="account_on_checkout != 'mandatory' and website_office_boardroom" role="button" href='/shop/create_account'  style="margin-top: -11px"> Proceed as a Guest</a> -->
+                    <a t-if="account_on_checkout != 'mandatory'" role="button" href='/shop/create_account'  style="margin-top: -11px"> Create Account</a>
+                    <small class="text-muted" t-if="account_on_checkout == 'optional'"> or </small>
+                    <a t-if="account_on_checkout != 'disabled'" role="button" href='/web/login?redirect=/shop/checkout'  style="margin-top: -11px"> Sign in</a>
+                </h2>
+            </t>
+        </xpath>
+        <xpath expr="//form[hasclass('checkout_autoformat')]" position="replace">
+        </xpath>
+    </template>
+    <!-- remove terms and condition by kevin -->
+    <template id="product_custom_text" inherit_id="website_sale.product" active="True" name="Terms and Conditions" priority="21">
+        <xpath expr="//div[@id='product_details']//h1" position="after">
+            <t t-if="product.default_code">
+                <strong style="color: #007882 !important;">[<span  t-esc="product.default_code" />]</strong>
+            </t>
+        </xpath>
+
+        <!-- <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
+            <p class="text-muted mb-0" style="text-align:left;">
+                <t t-foreach="product.attribute_line_ids.mapped('value_ids')" t-as="value">
+                    <t t-if="value.name == 'Warehouse or Storage Unit'">
+                        <div>
+                            <u>Featured Services</u><br/>
+                            <ul>
+                              <li>Solar Power on lights and selected plug(s)</li>
+                              <li>Wi-Fi inside your unit</li>
+                              <li>2 hours per month free boardroom/meeting room use</li>
+                              <li>Tenant Customisable Automated Visitor/Access Management</li>
+                              <li>24h Park Security</li>
+                              <li>Refuse removal</li>
+                              <li>Yard cleaning and garden maintenance</li>
+                            </ul>
+                            <u>Excluded</u><br/>
+                            <ul>
+                              <li>Prepaid Eskom electricity and water</li>
+                            </ul>
+                            <u>Terms and Conditions</u><br/>
+                            <ul>
+                              <li>No move out after 8pm</li>
+                            </ul>
+                        </div>
+                    </t>
+                    <t t-if="value.name == 'First Floor Office'">
+                        <div>
+                            <u>Featured Services</u><br/>
+                            <ul>
+                              <li>Table, Chairs, Presentation TV screen with HDMI connection cable</li>
+                              <li>Wi-Fi</li>
+                              <li>Uninterrupted power – i.e. no loadshedding</li>
+                            </ul>
+                        </div>
+                    </t>
+                    <t t-if="value.name == 'First Floor Boardroom'">
+                        <div>
+                            <u>Featured Services</u><br/>
+                            <ul>
+                              <li>Table, Chairs, Presentation TV screen with HDMI connection cable</li>
+                              <li>Wi-Fi</li>
+                              <li>Uninterrupted power – i.e. no loadshedding</li>
+                            </ul>
+                        </div>
+                    </t>
+                </t>
+            </p>
+        </xpath> -->
+    </template>
+
+    <!-- <template id="product_attributes_body" inherit_id="website_sale_comparison.product_attributes_body">
+        <xpath expr="//section[@id='product_full_spec']" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+    </template> -->
+
+    <template id="erpweb_payment_confirmation" inherit_id="website_sale.payment">
+        <xpath expr="//div[@id='address_on_payment']" position="after">
+            <div class="alert alert-warning">
+                <strong>To finalize the booking, please make a payment.</strong>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="erpweb_order_confirmation" inherit_id="website_sale.confirmation">
+        <!-- <xpath expr="//t[t-following-sibling::div[@id='oe_structure_website_sale_confirmation_1']]" position="replace">
+            <t t-if="request.env['res.users']._get_signup_invitation_scope() == 'b2c' and order.get_portal_last_transaction()">
+                <p class="alert alert-info mt-3" role="status">
+                    Thank you!
+                    <br/><br/>
+                    Your booking request, reference <em t-field="order.name" /> has been received. Email confirmation will be sent to the address you provided.
+                    <br/><br/>
+                    We will send you instructions on how to access the premises once the documentation you submitted (if you are not an existing Customer) has been approved and payment cleared into our account.
+                    <br/><br/>
+                    If your submitted documentation is not in order we will contact you within 20 business hours to make arrangements.
+                    <br/><br/>
+                    Best Regards,<br/>
+                    The Blue Spaces Team
+                    <br/><br/>
+                </p>
+            </t>
+        </xpath> -->
+        <xpath expr="//div[@class='oe_structure clearfix mt-3']" position="before">
+        <t t-if="request.env['res.users']._get_signup_invitation_scope() == 'b2c' and request.website.is_public_user()">
+            <p class="alert alert-info mt-3" role="status">
+                    Thank you!
+                    <br/><br/>
+                    Your booking request, reference <em t-field="order.name" /> has been received. Email confirmation will be sent to the address you provided.
+                    <br/><br/>
+                    We will send you instructions on how to access the premises once the documentation you submitted (if you are not an existing Customer) has been approved and payment cleared into our account.
+                    <br/><br/>
+                    If your submitted documentation is not in order we will contact you within 20 business hours to make arrangements.
+                    <br/><br/>
+                    Best Regards,<br/>
+                    The Blue Spaces Team
+                    <br/><br/>
+                </p>
+        </t>
+    </xpath>
+    </template>
+
+    <!-- <template id="erpweb_payment_confirmation_status" inherit_id="website_sale.payment_confirmation_status">
+
+        <xpath expr="(//div[hasclass('oe_website_sale_tx_status')])" position="inside">
+            <div class="alert alert-danger" style="margin-top: 10px;" t-if="order.is_office_boardroom_order">
+                <t t-set="order_message" t-value="order.get_message()"/>
+                <span t-esc="order_message"/>
+            </div>
+        </xpath>
+        
+    </template> -->
+
+    <template id="confirmation_inherit" inherit_id="website_sale.confirmation">
+        <!-- <xpath expr="//div[@id='wrap']//div[hasclass('oe_website_sale')]//h1" position="replace">
+            <h1><span>Order</span> <em t-field="order.name" /> <t t-if="order.state == 'sale'"><span t-if="not order.is_office_boardroom_order">Confirmed</span></t></h1>
+        </xpath> -->
+        <xpath expr="//h5" position="replace">
+                <h5>
+                    <em>
+                        <span>Order</span>
+                        <span t-field="order.name"/>
+                        <t t-if="order.state == 'sale'">
+                            <span t-if="not order.is_office_boardroom_order">Confirmed</span>
+                            <i class="fa fa-check-circle ms-1"/>
+
+                        </t>
+                    </em>
+                </h5>  
+    </xpath>
+    </template>
+
+    <template id="confirmation_inherit" inherit_id="website_sale.confirmation" name="Discard order summary">
+        <xpath expr="//div[hasclass('card')]" position="after">
+            <t t-set="is_office" t-value="0"/>
+            <t t-foreach="order.order_line" t-as="line">
+                <t t-if="line.product_id.is_office or line.product_id.is_boardroom">
+                    <t t-set="is_office" t-value="1"/>
+                </t>
+            </t>
+
+            <div name="visitors" t-if="order.ofc_visitors" class="card mt-3">
+                <div class="card-body">
+                    <b>Thank you for visitor's details.</b>
+                </div>
+            </div>
+
+            <div name="visitors" t-if="is_office == 1 and order.no_of_visitors > 0 and not order.ofc_visitors and order.transaction_ids and order.transaction_ids[0].state not in ('error', 'cancel')">
+                <form target="_self" id="bluespace_visitors" action="/bluespace/visitors/" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <b>Add Visitors Cell Phone Number</b>
+                    <!-- <t t-esc="order.no_of_visitors"/> -->
+                    <div class="col-sm">
+                        <!-- <t t-foreach="order.no_of_visitors" t-as="visitor">
+                            <tr class="col-sm">
+                                <td> Visitor <t t-esc="visitor+1"/>: Cell Phone number </td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='OfcPersonCellPhone' name='ofc_person_cell' placeholder="000 000 0000"/>
+
+                                </td>
+                            </tr>
+                        </t> -->
+                        <t t-set="cnt" t-value="1"/>
+                        <table>
+                            <tr></tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 1: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor1' name='visitor1_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 2: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor2' name='visitor2_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 3: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor3' name='visitor3_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 4: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor4' name='visitor4_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 5: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor5' name='visitor5_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 6: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor6' name='visitor6_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 7: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor7' name='visitor7_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 8: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor8' name='visitor8_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 9: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor9' name='visitor9_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 10: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor10' name='visitor10_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 11: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor11' name='visitor11_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 12: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor12' name='visitor12_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 13: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor13' name='visitor13_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 14: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor14' name='visitor14_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 15: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor15' name='visitor15_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 16: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor16' name='visitor16_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                            <tr t-if="order.no_of_visitors >= cnt">
+                                <td class="col-sm">Visitor 17: Cell Phone number</td>
+                                <td class="col-sm">
+                                    <input class="form-control visitor" type='text' id='visitor17' name='visitor17_cell' placeholder="000 000 0000"/>
+                                </td>
+                                <t t-set="cnt" t-value="cnt+1"/>
+                            </tr>
+                        </table>
+                        <button type="submit" class="btn btn-secondary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('card')]" position="replace">
+            <div class="card mt-3">
+              <div class="card-body">
+                <t t-set="same_shipping" t-value="bool(order.partner_shipping_id==order.partner_invoice_id or only_services)" />
+                <div><b>Billing <!-- <t t-if="same_shipping and not only_services"> &amp; Shipping</t> -->: </b><span t-esc='order.partner_invoice_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/></div>
+                <!-- <div t-if="not same_shipping and not only_services" groups="account.group_delivery_invoice_address"><b>Shipping: </b><span t-esc='order.partner_shipping_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')"  class="address-inline"/></div> -->
+              </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="product_warning" inherit_id="website_sale.cart">
+        <xpath expr="//t//div[@id='oe_structure_website_sale_cart_1']" position="after">
+            <div class="modal fade" id="warehouse_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/warehouse.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="warehouse_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="office_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="office_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="vehicle_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/vehicle.png" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="vehicle_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="boardroom_box" role="dialog">
+                <div class="modal-dialog" style="margin-top:5%;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <img src="../bluespace_custom_16/static/src/description/image/office.png" onContextMenu="return false;" style="width: 100%;"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="boardroom_close">Close</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <t t-if="website_sale_order.mapped('order_line').mapped('product_template_id').filtered(lambda x: x.type == 'product')">
+                <t t-set="product_id" t-value="website_sale_order.mapped('order_line').mapped('product_template_id').filtered(lambda x: x.type == 'product')"/>
+                <t t-if="product_id.product_category in ['1_storage_unit', '4_parking']">
+                    <div style="color:#002060;">Please note: This quote consists of the first month's rent plus a deposit. The first month's rent is calculated on a pro-rata basis relative to your selected Move in Date. After payment of this quoted amount, your rent from the first full calendar month for this <span t-esc="product_id.name"/> <t t-if="product_id.product_category == '1_storage_unit'">Micro-warehouse/storage unit</t><t t-else ="">Parking bay</t> will be R<span t-esc="product_id.list_price"/> + Fixed Services Cost (if applicable) <t t-if="product_id.product_category == '1_storage_unit'">+ VAT </t>.</div>
+                </t>
+            </t>
+            <div name="attach_product_pdf">
+                <t t-foreach="website_sale_order.website_order_line" t-as="line">
+                    <t t-if="'Warehouse' in line.product_id.name">
+                        <!-- <a id="warehouse" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Warehouse Floor Map</b>
+                        </a> -->
+                        <a id="warehouse">
+                            <b style="color:#871D3D;cursor:pointer;">Click here for Warehouse Floor Map try 5</b>
+                            </a>
+                        <br/>
+                    </t>
+                    <t t-if="'Office' in line.product_id.name">
+                        <a id="office" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Office Floor Map </b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Shaded' in line.product_id.name or 'Unshaded' in line.product_id.name">
+                         <a id="vehicle" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Vehicle Storage Site Map</b>
+                        </a><br/>
+                    </t>
+                    <t t-if="'Boardroom' in line.product_id.name">
+                        <a id="boardroom" data-toggle="modal" data-target="#myModal">
+                           <b style="color:#871D3D;cursor:pointer;">Click here for Boardroom Floor Map </b>
+                        </a>
+                    </t>
+                </t>
+            </div>
+            <t t-set="prd_ids" t-value="[]"/>
+            <t t-set="so_ids" t-value=""/>
+            <t t-set="state" t-value="[]"/>
+            <t t-set="not_avail" t-value="False"/>
+            <t t-set="dt1" t-value="False"/>
+            <t t-if="website_sale_order and website_sale_order.website_order_line">
+                <t t-foreach="website_sale_order.website_order_line" t-as="line">
+                    <!-- <t t-set="rental_product" t-value="website_sale_order.get_rental_product()"/> -->
+                    
+                    <!-- <t t-set="service_product" t-value="website_sale_order.get_service_product()"/> -->
+                    <!-- Rental product: check product type -->
+                    <!-- <t t-set="rental_product" 
+                    t-value="line.product_id if line.product_id.type == 'rental' else False"/> -->
+                    <t t-set="rental_product" t-value="line.product_id if line.product_id and line.product_id.type == 'rental' else None"/>
+
+                    <!-- Service product: check product type -->
+                    <!-- <t t-set="service_product" 
+                    t-value="line.product_id if line.product_id.type == 'service' else False"/> -->
+                    <t t-set="service_product" t-value="line.product_id if line.product_id and line.product_id.type == 'service' else None"/>
+                    <t t-if="'Deposit' not in line.product_id.name and not (line.product_id.is_office or line.product_id.is_boardroom)">
+                        <t t-set="prd_ids" t-value="prd_ids + [line.product_id.id]"/>
+                        <!-- <t t-if="line.product_id.id != rental_product.id and line.product_id.id != service_product.id">
+                          <t t-set="dt1" t-value="line.start_date"/>
+                          <t t-set="so_ids" t-value="request.env['sale.order.line'].sudo().search([('product_id', '=', line.product_id.id), ('state', 'not in', ['draft', 'cancel']), ('order_id.subscription_state', '!=', '6_churn')])"/> -->
+                        <t t-if="(rental_product and line.product_id.id != rental_product.id) and (service_product and line.product_id.id != service_product.id)">
+                            <t t-set="dt1" t-value="line.start_date"/>
+                            <t t-set="so_ids" t-value="request.env['sale.order.line'].sudo().search([('product_id', '=', line.product_id.id), ('state', 'not in', ['draft', 'cancel']), ('order_id.subscription_state', '!=', '6_churn')])"/>
+                        </t>
+                    </t>
+                </t>
+                <t t-foreach="so_ids" t-as="s">
+                    <t t-if="s.state in ('send', 'sale', 'done','sent')  and s.order_id.subscription_state != '6_churn'">
+                        <t t-set="not_avail" t-value="website_sale_order.product_available(line.product_id, dt1, so_ids)"/>
+                        <t t-set="state" t-value="state + [s.state]"/>
+                    </t>
+                </t>
+                <div t-if="state != [] and not_avail" class="alert alert-danger">
+                    <strong>Warning!</strong>
+                    The unit in your cart is unavailable at the moment, Please select other unit.
+                </div>
+                <div t-name="MoveOutModals" t-component="MoveOutModals"/>
+            </t>
+        </xpath>
+        <!-- <xpath expr="//t//div[@id='wrap']/div[hasclass('oe_website_sale')]/div[hasclass('row')]/div[hasclass('oe_cart')]/div[hasclass('row')]/div/div[hasclass('justify-content-between')]/div[hasclass('flex-column')]/a[@role='button']" position="replace">
+                <t t-if="redirect_to_sign_in">
+                    <a class="btn btn-primary float-end" role="button" t-attf-href="{{redirect_url}}">
+                        <span>Sign In</span>
+                        <span class="fa fa-sign-in"/>
+                    </a>
+                </t>
+                <t t-else="">
+                    <t t-if="state != [] and not_avail">
+                        <a class="btn btn-primary float-end disabled" role="button" t-attf-href="{{redirect_url}}">
+                            <span>Process Checkout</span>
+                            <span class="fa fa-chevron-right"/>
+                        </a>
+                    </t>
+                    <t t-else="">
+                        <a class="btn btn-primary float-end" role="button" t-attf-href="{{redirect_url}}">
+                            <span>Process Checkout</span>
+                            <span class="fa fa-chevron-right"/>
+                        </a>
+                    </t>
+                </t>
+        </xpath> -->
+    </template>
+
+    <template id="products_item_extended" inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('o_wsale_product_information_text')]" position="replace">
+            <h6 class="o_wsale_products_item_title mb-2">
+                <a class="text-primary text-decoration-none" itemprop="name" t-att-href="product_href" t-att-content="product.name" t-field="product.name" />
+                <t t-if="product.default_code">
+                    <strong style="#007882 !important;">[<span t-esc="product.default_code" />]</strong>
+                </t>
+                <a t-if="not product.website_published" role="button" t-att-href="product_href" class="btn btn-sm btn-danger" title="This product is unpublished.">
+                    Unpublished
+                </a>
+            </h6>
+        </xpath>
+    </template>
+
+    <template id="cart_lines_extended" inherit_id="website_sale.cart_lines" name="Accessory Products in my cart">
+        <xpath expr="//div[hasclass('flex-grow-1')]" position="replace">
+            <div class='flex-grow-1'>
+                <div>
+                    <t t-call="website_sale.cart_line_product_link">
+                        <strong style="color:#007882 !important;" t-field="line.name_short" />
+                         <t t-if="line.product_id.default_code"> [ <strong style="color: #007882 !important;" t-field="line.product_id.default_code"/> ]</t>
+                    </t>
+                </div>
+                <t t-call="website_sale.cart_line_description_following_lines">
+                    <t t-set="div_class" t-value="'d-none d-md-block'"/>
+                </t>
+
+                <!-- <t t-set="rental_product" t-value="website_sale_order.get_rental_product()"/> -->
+                <t t-set="rental_product" 
+                    t-value="line.product_id if line.product_id.type == 'rental' else False"/>
+
+                <t t-set="warehouse_order" t-value="website_sale_order.website_order_line.filtered(lambda x: x.product_id.product_category in ['1_storage_unit'])"/>
+                <div class="text-muted d-md-block small" t-if="warehouse_order and line.product_id.id == rental_product.id">
+                    <t t-esc="line.product_id.description_sale"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="inherit_total_tax" inherit_id="website_sale.total" name="Hide Tax">
+        <xpath expr="//div[@id='cart_total']//table" position="before">
+            <t t-set="is_warehouse" t-value="0"/>
+            <t t-foreach="website_sale_order.website_order_line" t-as="line">
+                <t t-if="line.product_id.product_category == '1_storage_unit'">
+                    <t t-set="is_warehouse" t-value="1"/>
+                </t>
+            </t>
+        </xpath>
+        <xpath expr="//div[@id='cart_total']//table//tr[@id='order_total_taxes']" position="replace">
+            <tr id="order_total_taxes">
+                <!-- <t t-if="is_warehouse">
+                    <td class="text-end border-0">VAT:</td>
+                    <td class="text-xl-end border-0">
+                        <span t-field="website_sale_order.amount_tax" class="monetary_field" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}" />
+                    </td>
+                </t>
+                <t t-else="">
+                    <td class="text-end border-0"></td>
+                    <td class="text-xl-end border-0"></td>
+                </t> -->
+                <td class="text-end border-0">VAT:</td>
+                <td class="text-xl-end border-0">
+                    <span t-field="website_sale_order.amount_tax" class="monetary_field" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}" />
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//div[@id='cart_total']//table//tr[@id='order_total']" position="replace">
+            <tr id="order_total">
+                <t t-if="is_warehouse">
+                    <td class="text-end border-top border-bottom-0"><strong>Total:</strong></td>
+                    <td class="text-xl-end border-top border-bottom-0">
+                    <strong t-field="website_sale_order.amount_total" class="monetary_field"
+                      t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}'/>
+                    </td>
+                </t>
+                <t t-else="">
+                    <td class="text-end border-top border-bottom-0"><strong>Total (Incl VAT):</strong></td>
+                    <td class="text-xl-end border-top border-bottom-0">
+                    <strong t-field="website_sale_order.amount_total" class="monetary_field"
+                      t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}'/>
+                    </td>
+                </t>
+            </tr>
+        </xpath>
+    </template>
+
+    <!-- <template id="checkout_inherit" inherit_id="website_sale.checkout" name="Add New Address">
+        <xpath expr="//div//div[hasclass('all_shipping')]//div[hasclass('one_kanban')]" position="replace">
+        </xpath>
+    </template> -->
+
+    <template id="address_on_payment_inherit" inherit_id="website_sale.address_on_payment" name="Remove Edit">
+        <xpath expr="//div[hasclass('card')]//div[@id='delivery_and_billing']//a" position="replace">
+        </xpath>
+        <xpath expr="//div[hasclass('card')]//div[@id='delivery_and_billing']//div[1]" position="replace">
+            <div>
+                <b>Billing<!-- <t t-if="same_shipping and not only_services"> &amp; Shipping</t> -->: </b>
+                <span t-esc="order.partner_id" t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('card')]//div[@id='delivery_and_billing']//div[2]" position="replace">
+        </xpath>
+    </template>
+
+    <template id="address_kanban_inherit" inherit_id="website_sale.address_kanban" name="Remove Edit">
+        <xpath expr="//div//div//a//i" position="replace">
+        </xpath>
+    </template>
+
+    <template id="reduction_code_inherit" inherit_id="website_sale.reduction_code">
+        <xpath expr="//div[@t-if='not force_coupon']" position="replace">
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,343 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="portal.user_dropdown" name="Fs Main Frontend Layout">
+        <t t-nocache="Each user is different regardless of the page visited."
+           t-nocache-_avatar="_avatar"
+           t-nocache-_icon="_icon"
+           t-nocache-_icon_class="_icon_class"
+           t-nocache-_user_name="_user_name"
+           t-nocache-_user_name_class="_user_name_class"
+           t-nocache-_item_class="_item_class"
+           t-nocache-_link_class="_link_class"
+           t-nocache-_dropdown_menu_class="_dropdown_menu_class">
+            <t t-set="is_connected" t-value="not user_id._is_public()"/>
+            <li t-if="is_connected" t-attf-class="#{_item_class} o_no_autohide_item">
+                <a href="#" role="button" data-bs-toggle="dropdown" t-attf-class="dropdown-toggle #{_link_class}">
+                    <t t-if="_avatar">
+                        <t t-set="avatar_source" t-value="image_data_uri(user_id.avatar_256)"/>
+                        <img t-att-src="avatar_source" t-attf-class="rounded-circle o_object_fit_cover #{_avatar_class}" width="24" height="24" alt="" loading="eager"/>
+                    </t>
+                    <i t-if="_icon" t-attf-class="fa fa-1x fa-fw fa-user-circle-o #{_icon_class}"/>
+                    <span t-if="_user_name" t-attf-class="#{_user_name_class}" t-esc="user_id.name[:23] + '...' if user_id.name and len(user_id.name) &gt; 25 else user_id.name"/>
+                </a>
+                <div t-attf-class="dropdown-menu js_usermenu #{_dropdown_menu_class}" role="menu">
+                    <a groups="base.group_user" href="/web" role="menuitem" class="dropdown-item ps-3" id="o_backend_user_dropdown_link">
+                        <i class="fa fa-fw fa-th me-1 small text-muted"/> Apps
+                    </a>
+                    <div id="o_logout_divider" class="dropdown-divider"/>
+                    <a t-attf-href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
+                        <i class="fa fa-fw fa-sign-out me-1 small text-muted"/> Logout
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item" t-if="request.session.uid">
+                <a href="/my/home" role="menuitem" class="ps-3" style="line-height: 2.5;color: #871D3D;">
+                    <i class="me-1 small text-muted"/> <b>My Account</b>
+                </a>
+            </li>
+        </t>
+    </template>
+
+    <template id="sale.portal_my_home_sale" name="Show Quotations / Sales Orders" customize_show="True" inherit_id="portal.portal_my_home" priority="20">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Pending Bookings</t>
+                <t t-set="url" t-value="'/my/quotes'"/>
+                <t t-set="placeholder_count" t-value="'quotation_count'"/>
+            </t>
+        </xpath>
+    </template>
+    <!-- <template id="sale.portal_my_home_menu_sale" name="Portal layout : sales menu entries" inherit_id="portal.portal_breadcrumbs" priority="20">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'quote' or sale_order and sale_order.state in ('sent', 'cancel')" t-attf-class="breadcrumb-item #{'active ' if not sale_order else ''}">
+                <a t-if="sale_order" t-attf-href="/my/quotes?{{ keep_query() }}">Pending Bookings</a>
+                <t t-else="">Pending Bookings</t>
+            </li>
+        </xpath>
+    </template> -->
+    <template id="sale.portal_my_home_menu_sale" name="Portal layout : sales menu entries" inherit_id="portal.portal_breadcrumbs" priority="20">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li id="portal_breadcrumbs_sale" t-if="page_name == 'quote' or sale_order and sale_order.state in ('sent', 'cancel')" t-attf-class="breadcrumb-item #{'active ' if not sale_order else ''}">
+                <a t-if="sale_order" t-attf-href="/my/quotes?{{ keep_query() }}">Quotations changed</a>
+                <t t-else="">Quotations changed</t>
+            </li>
+            <li t-elif="page_name == 'order' or sale_order and sale_order.state not in ('sent', 'cancel')" t-attf-class="breadcrumb-item #{'active ' if not sale_order else ''}">
+                <a t-if="sale_order" t-attf-href="/my/orders?{{ keep_query() }}">Sales Orders changed</a>
+                <t t-else="">Sales Orders changed</t>
+            </li>
+            <li t-if="sale_order" class="breadcrumb-item active">
+                <span t-field="sale_order.type_name"/>
+                <t t-out="sale_order.name"/>
+            </li>
+        </xpath>
+    </template>
+    <template id="sale.portal_my_quotations" name="My Quotations">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Quotations</t>
+            </t>
+            <t t-if="quotations" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Bookings #</th>
+                        <th class="text-end">Bookings Date</th>
+                        <th class="text-end">Valid Until</th>
+                        <th class="text-center"/>
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <t t-foreach="quotations" t-as="quotation">
+                    <tr>
+                        <td><a t-att-href="quotation.get_portal_url()"><t t-out="quotation.name"/></a></td>
+                        <td class="text-end"><span t-field="quotation.date_order"/></td>
+                        <td class="text-end"><span t-field="quotation.validity_date"/></td>
+                        <td class="text-center">
+                            <span t-if="quotation.state == 'cancel'" class="badge rounded-pill text-bg-secondary">
+                                <i class="fa fa-fw fa-remove"/> Cancelled</span>
+                            <span t-if="quotation.is_expired" class="badge rounded-pill text-bg-secondary">
+                                <i class="fa fa-fw fa-clock-o"/> Expired</span>
+                        </td>
+                        <td class="text-end">
+                            <span t-field="quotation.amount_total"/>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+            <p t-else="">There are currently no quotations for your account.</p>
+        </t>
+    </template>
+
+    <!-- <template id="sale_subscription.portal_my_home_menu_subscription" name="Portal layout : subscription menu entry" inherit_id="sale.portal_my_home_menu_sale" priority="10">
+        <xpath expr="//li[contains(@id,'portal_breadcrumbs_sale')]" position="after">
+            <li t-if="page_name == 'subscription'" t-attf-class="breadcrumb-item #{'active' if not subscription else ''}">
+                <a t-if="subscription" t-attf-href="/my/subscription?{{ keep_query() }}">Confirmed Bookings</a>
+                <t t-else="">Confirmed Bookings</t>
+            </li>
+            <li t-if="subscription" class="breadcrumb-item active">
+                <span t-field="subscription.type_name"/>
+                <t t-esc="subscription.name"/>
+            </li>
+        </xpath>
+    </template> -->
+
+    <template id="sale_subscription.portal_my_home_menu_subscription" name="Portal layout : subscription menu entry" inherit_id="sale.portal_my_home_menu_sale" priority="10">
+         <li id="portal_breadcrumbs_sale" position="after">
+             <li t-if="page_name == 'subscription'" t-attf-class="breadcrumb-item #{'active' if not subscription else ''}">
+                <a t-if="subscription" t-attf-href="/my/subscription?{{ keep_query() }}">Confirmed Bookings</a>
+                <t t-else="">Confirmed Bookings</t>
+            </li>
+            <li t-if="subscription" class="breadcrumb-item active">
+                <span t-field="subscription.type_name"/>
+                <t t-esc="subscription.name"/>
+            </li>
+         </li>
+    </template>
+
+    <template id="sale_subscription.portal_my_home_subscription" name="Show Subscriptions" customize_show="True" inherit_id="portal.portal_my_home" priority="90">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Confirmed Bookings</t>
+                <t t-set="url" t-value="'/my/subscription'"/>
+                <t t-set="placeholder_count" t-value="'subscription_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="product_attachments_ids" inherit_id="website_sale.products" name="product attachments">
+        <xpath expr="//div[contains(@t-attf-class, 'products_attributes_filters')]" position="after">
+            <div style="margin-bottom: 20px;color: red;font-size:18px;"> <span t-esc="request.env.company.sale_note"/></div>
+        </xpath>
+    </template>
+
+     <template id="product_inherit" inherit_id="website_sale.product" name="erpweb product page">
+        <xpath expr="//div[@id='product_full_description']" position="before">
+            <div class="text-center" style="margin-bottom: 20px;color: red;font-weight: bolder;font-size:18px;"> <span t-esc="request.env.company.sale_note"/></div>
+        </xpath>
+
+        <xpath expr="//div[@id='product_full_description']" position="attributes">
+            <attribute name="style">margin-left:120px !important</attribute>
+        </xpath>
+    </template>
+    <!-- <template id="short_cart_summary_inherit" inherit_id="website_sale.cart_lines" name="Cart Summary Page">
+        <xpath expr="//div[@id='cart_products']" position="after">
+            <div class="text-center" style="margin-bottom: 20px;color: red;font-weight: bolder;font-size:18px;"> <span t-esc="request.env.company.sale_note"/></div>
+        </xpath>
+    </template> -->
+    <!-- <template id="cart_summary_inherit" inherit_id="website_sale.cart_lines" name="Cart Summary Page">
+        <xpath expr="//div[@id='cart_products']" position="after">
+            <div class="text-center" style="margin-bottom: 20px;color: red;font-weight: bolder;font-size:18px;width:340px;"> <span t-esc="request.env.company.sale_note"/></div>
+        </xpath>
+    </template> -->
+
+    <template id="sale_subscription.portal_my_subscriptions" name="My Booking">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Booking</t>
+            </t>
+            <t t-if="not subscriptions">
+                <p>You don't have any subscriptions yet.</p>
+            </t>
+            <t t-if="subscriptions" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th class="w-75">Booking</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <t t-foreach="subscriptions" t-as="subscription">
+                    <tr>
+                        <td>
+                            <a t-att-href="subscription.get_portal_url()"><t t-esc="subscription.display_name"/></a>
+                        </td>
+                        <td class="text-center" id="subscription_state">
+                            <t t-if="subscription.stage_category == 'progress' and not subscription.to_renew and not subscription.is_office_boardroom_order">
+                                <t t-if="subscription.is_notice_given">
+                                    <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Notice Given</span>
+                                </t>
+                                <t t-if="not subscription.notice_given and subscription.is_website">
+                                    <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Active</span>
+                                </t>
+
+                                <t t-if="not subscription.notice_given and not subscription.is_website and subscription.rental_status == 'return'">
+                                    <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Active</span>
+                                </t>
+                            </t>
+                            <t t-set="is_website" t-value="subscription.team_id.sudo().is_website"/>
+                            <t t-if="is_website and subscription.stage_category in ['progress', 'draft'] and not subscription.to_renew and subscription.is_office_boardroom_order and subscription.rental_status != 'returned'">
+                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Active</span>
+                            </t>
+
+                            <t t-if="not is_website and subscription.stage_category in ['progress'] and not subscription.to_renew and subscription.is_office_boardroom_order and subscription.rental_status != 'returned'">
+                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Active</span>
+                            </t>
+
+                            <t t-if="subscription.stage_category == 'closed' or subscription.rental_status == 'returned'">
+                                <span class="badge rounded-pill text-bg-danger"><i class="fa fa-fw fa-remove"/> Vacated </span>
+                            </t>
+                        </td>
+                        <td class="text-end"><span t-esc="subscription.amount_total" t-options="{'widget': 'monetary', 'display_currency': subscription.currency_id}"/></td>
+                    </tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal.my_account_link" name="Link to frontend portal" inherit_id="portal.user_dropdown">
+        <xpath expr="//*[@id='o_logout_divider']" position="before">
+        </xpath>
+    </template>
+
+    <!-- <template id="sale_subscription_confirmed_booking" name="Confirmed Booking" inherit_id="sale_subscription.subscription">
+        <xpath expr="//div[hasclass('oe_website_contract')]//div[hasclass('card-header')]/div/div[1]" position="replace">
+            <div class="col-12 col-lg flex-grow-1 mb-1 mb-lg-0">
+                <h4 class="mb-0"><small class="text-muted">Confirmed Booking -</small> <span t-field="subscription.display_name"/></h4>
+            </div>
+        </xpath>
+        <xpath expr="//li[hasclass('list-group-item')]/div[1]" position="replace">
+            <t t-if="subscription.stage_category != 'closed' and not subscription.notice_given">
+                <div><strong>Next Invoice: <span t-field="subscription.next_invoice_date"/></strong></div>
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('card-body')]//div[hasclass('row')]/div/table/tbody/tr[6]" position="replace">
+            <t t-if="subscription.stage_category != 'closed' and not subscription.notice_given">
+                <tr>
+                    <th class="text-end pb-0">Next Invoice:</th>
+                    <td class="w-100 pb-0"><span t-field="subscription.next_invoice_date"/></td>
+                </tr>
+            </t>
+        </xpath>
+    </template> -->
+
+    <!-- <template id="subscription_extended" name="Subscription Extended" inherit_id="sale_subscription.subscription_portal_sidebar">
+        <xpath expr="//t[@t-call='portal.portal_record_sidebar']////div[@class='d-flex flex-column gap-2']/div[1]" position="replace">
+            <t t-if="not subscription.is_office_boardroom_order and subscription.stage_category != 'closed' and not subscription.notice_given">
+                <div><strong>Next Invoice: <span t-field="subscription.next_invoice_date"/></strong></div>
+            </t>
+        </xpath>
+        <xpath expr="//t[@t-call='portal.portal_record_sidebar']//div[hasclass('o_portal_sidebar')]/div[1]//div[hasclass('card-header')]" position="replace">
+            <div class="card-header bg-white pb-2 pt-3">
+                <div class="row">
+                    <div class="col-12 col-lg flex-grow-1 mb-1 mb-lg-0">
+                        <h4 class="mb-0"><small class="text-muted">Confirmed Booking -</small> <span t-field="subscription.display_name"/></h4>
+                    </div>
+                    <div class="col-12 col-lg flex-grow-0 text-lg-end mb-1 mb-lg-0">
+                        <t t-if="subscription.stage_category == 'progress' and not subscription.to_renew">
+                            <t t-if="subscription.is_flexible and subscription.notice_given">
+                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Notice Given</span>
+                            </t>
+                            <t t-if="not subscription.notice_given and subscription.is_website">
+                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Active</span>
+                            </t>
+                            <t t-if="not subscription.notice_given and not subscription.is_website and subscription.rental_status == 'return'">
+                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check"/> Active</span>
+                            </t>
+                        </t>
+                        <span t-if="subscription.to_renew and subscription.stage_category == 'progress'" class="badge rounded-pill text-bg-warning"><i class="fa fa-fw fa-refresh"/> To Renew</span>
+                        <span t-if="subscription.stage_category == 'closed'" class="badge rounded-pill badge-default"><i class="fa fa-fw fa-remove"/> Vacated</span>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-call='portal.portal_layout']//div[hasclass('o_portal_sidebar')]/div[1]//table[hasclass('table-borderless')]//tbody" position="replace">
+            <tbody style="white-space:nowrap">
+                <tr>
+                    <th class="text-end pb-0">Current Plan:</th>
+                    <td class="w-100 pb-0 text-wrap"><span t-field="template.name"/></td>
+                </tr>
+                <tr t-if="not subscription.is_office_boardroom_order">
+                    <th class="text-end pb-0">Frequency:</th>
+                    <td class="w-100 pb-0 text-wrap"><span t-field="subscription.recurrence_id.name"/></td>
+                </tr>
+                <tr>
+                    <th class="text-end pb-0">Reference:</th>
+                    <td class="w-100 pb-0 text-wrap"><span t-field="subscription.client_order_ref"/></td>
+                </tr>
+                <tr t-if="subscription.end_date">
+                    <th class="text-end pb-0">Valid Until:</th>
+                    <td class="w-100 pb-0"><span t-field="subscription.end_date"/></td>
+                </tr>
+                <tr>
+                    <th class="text-end pb-0">Start Date:</th>
+                    <td class="w-100 pb-0"><span t-field="subscription.start_date"/></td>
+                </tr>
+                <tr t-if="not subscription.is_office_boardroom_order and subscription.stage_category != 'closed' and not subscription.notice_given">
+                    <th class="text-end pb-0">Next Invoice:</th>
+                    <td class="w-100 pb-0"><span t-field="subscription.next_invoice_date"/></td>
+                </tr>
+            </tbody>
+        </xpath>
+
+        <xpath expr="//t[@t-call='portal.portal_layout']//div[hasclass('oe_website_contract')]//div[hasclass('card-body')]//table//tbody//t[@t-foreach='subscription.order_line']//tr[1]" position="attributes">
+            <attribute name="t-if">line.price_subtotal != 0</attribute>
+        </xpath>
+    </template> -->
+
+    <!-- <template id="submenu_inherit" inherit_id="website.submenu">
+        <xpath expr="//li[1]" position="replace">
+            <li t-if="submenu.is_visible and not (submenu.child_id or submenu.is_mega_menu)" t-attf-class="#{item_class or ''}">
+                <t t-if="submenu.clean_url() == '/shop'">
+                    <a t-att-href="submenu.clean_url()"
+                        t-attf-class="book-now-menu #{'active' if submenu.clean_url() and unslug_url(request.httprequest.path) == unslug_url(submenu.clean_url()) else ''}"
+                        role="menuitem"
+                        t-ignore="true"
+                        t-att-target="'_blank' if submenu.new_window else None">
+                        <span t-field="submenu.name"/>
+                    </a>
+                </t>
+                <t t-else="">
+                    <a t-att-href="submenu.clean_url()"
+                        t-attf-class="#{link_class or ''} #{'active' if submenu.clean_url() and unslug_url(request.httprequest.path) == unslug_url(submenu.clean_url()) else ''}"
+                        role="menuitem"
+                        t-ignore="true"
+                        t-att-target="'_blank' if submenu.new_window else None">
+                        <span t-field="submenu.name"/>
+                    </a>
+                </t>
+            </li>
+        </xpath>
+    </template> -->
+</odoo>

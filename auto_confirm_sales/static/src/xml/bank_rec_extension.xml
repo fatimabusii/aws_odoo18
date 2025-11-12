@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Extend the Sale Orders snippet -->
+    <t t-name="auto_confirm_sales.BankRecRecordNotebookSaleOrdersInherit"
+       t-inherit="sale_account_accountant.BankRecRecordNotebookSaleOrders"
+       t-inherit-mode="extension">
+        <xpath expr="//span" position="after">
+            <br/>
+            <t t-if="props.record.is_sales_validated">
+                <h2>This sales order Validated.</h2>
+            </t>
+            <button class="btn btn-primary"
+                    t-attf-class="{'d-none': props.record.is_sales_validated}"
+                    t-on-click="() => this.env.services.orm.call('bank.rec.widget', 'button_auto_validate_sales_order', [[props.record.id]])">
+                Validate Sales
+            </button>
+            <field name="matched_sale_order_ids" readonly="1">
+                <tree>
+                    <field name="name" string="Number" readonly="1" decoration-bf="1"/>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="amount_total" sum="Total Tax Included" widget="monetary" decoration-bf="1" optional="show"/>
+                    <field name="state" decoration-success="state == 'sale' or state == 'done'" decoration-info="state == 'draft' or state == 'sent'" widget="badge" optional="show"/>
+                    <field name="invoice_status"/>
+                    <field name="currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </xpath>
+    </t>
+</templates>

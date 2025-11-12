@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <!-- EVENT.TYPE VIEWS -->
+        <record model="ir.ui.view" id="view_year_form">
+            <field name="name">year.year.form</field>
+            <field name="model">year.year</field>
+            <field name="arch" type="xml">
+                <form string="Year">
+                   <sheet>
+                        <div class="oe_title">
+                            <label for="name" string="Name"/>
+                            <h1><field name="name" placeholder="Enter Year" required="1"/></h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_year_tree">
+            <field name="name">year.year.list</field>
+            <field name="model">year.year</field>
+            <field name="arch" type="xml">
+                <list string="Year">
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="year_action" model="ir.actions.act_window">
+            <field name="name">Year</field>
+            <field name="res_model">year.year</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create an Year
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Year"
+            id="menu_year"
+            sequence="160"
+            action="year_action"
+            parent="sale.menu_sale_config"/>
+
+        <!-- Entity Reprentative Role -->
+        <record model="ir.ui.view" id="entity_representative_role_form">
+            <field name="name">entity.representative.role.form</field>
+            <field name="model">entity.representative.role</field>
+            <field name="arch" type="xml">
+                <form string="Role">
+                   <sheet>
+                        <div class="oe_title">
+                            <label for="name" string="Name"/>
+                            <h1><field name="name" placeholder="Enter Role" required="1"/></h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="entity_representative_role_tree">
+            <field name="name">entity.representative.role.tree</field>
+            <field name="model">entity.representative.role</field>
+            <field name="arch" type="xml">
+                <list string="Role">
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="entity_representative_role_action" model="ir.actions.act_window">
+            <field name="name">Entity Representative Role</field>
+            <field name="res_model">entity.representative.role</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a Role
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Entity Representative Role"
+            id="menu_entity_representative_role"
+            action="entity_representative_role_action"
+            parent="sale.menu_sale_config"/>
+    </data>
+</odoo>

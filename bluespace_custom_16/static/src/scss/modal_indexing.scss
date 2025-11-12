@@ -1,0 +1,10 @@
+/* Force hover image modals to appear on top */
+.modal-dialog {
+    max-width: 90% !important;
+    margin: 5% auto !important;
+}
+
+.modal-content img {
+    width: 100%;
+    display: block;
+}

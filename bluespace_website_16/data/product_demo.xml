@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Rental Deposit Product Template -->
+        <record id="rental_deposite" model="product.product">
+            <field name="name">Rental Deposit</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+            <field name="default_code">RENTAL_DEPOSIT</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="standard_price">0.0</field>
+            <field name="list_price">0.0</field>
+        </record>
+
+        <!-- Fixed Services Product Template -->
+        <record id="rental_service_charge" model="product.product">
+            <field name="name">Fixed Services Cost (Wi-Fi, Solar Power, 24h Security, Refuse Removal, Yard Cleaning)</field>
+            <field name="default_code">RENTAL_SERVICE_CHARGE</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="standard_price">0.0</field>
+            <field name="list_price">0.0</field>
+        </record>
+
+    </data>
+
+    <data>
+        <record id="product_category_office" model="product.category">
+            <field name="parent_id" ref="product.product_category_all"/>
+            <field name="name">Office</field>
+        </record>
+    </data>
+</odoo>
+
+<!-- <?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="rental_deposite" model="product.product">
+            <field name="name">Rental Deposit</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+            <field name="standard_price">0.0</field>
+            <field name="list_price">0.0</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="rental_service_charge" model="product.product">
+            <field name="name">Fixed Services Cost (Wi-Fi, Solar Power, 24h Security, Refuse Removal, Yard Cleaning)</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+            <field name="standard_price">0.0</field>
+            <field name="list_price">0.0</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+        </record>
+    </data>
+
+    <data>
+        <record id="product_category_office" model="product.category">
+            <field name="parent_id" ref="product.product_category_all"/>
+            <field name="name">Office</field>
+        </record>
+    </data>
+</odoo> -->

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="website_appointment.website_appointment_type_menu" model="ir.ui.menu">
+        <field name="name">Booking View</field>
+    </record>
+
+    <record id="appointment.appointment_type_action" model="ir.actions.act_window">
+        <field name="name">Booking View</field>
+    </record>
+</odoo>

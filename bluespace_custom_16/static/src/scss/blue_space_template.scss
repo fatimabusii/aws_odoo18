@@ -1,0 +1,47 @@
+.variant_attribute
+{
+    display:none;
+}
+.date-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    /* pointer-events: none; */
+    cursor: pointer;
+    color: #aaa;
+  }
+.css_not_available.js_product .css_not_available_msg {
+    display: none;
+}
+.book-now-menu {
+    background-color: #23395B;
+    color: #FFF;
+    display: block;
+    padding: 0.5rem 1rem;
+}
+.navbar-light a:not(.btn) {
+    color: #FFF;
+}
+.navbar-light a:not(.btn):hover {
+    color: #FFF;
+}
+.mobile_column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+
+@media (min-width: 767) {
+    .mobile_attribute {
+        display:block !important;
+    }
+    .mobile_column {
+      width: 100%;
+    }
+}
+
+@media screen and (min-width: 1081px) {
+    .mobile_attribute {
+        display:none !important;
+    }
+}

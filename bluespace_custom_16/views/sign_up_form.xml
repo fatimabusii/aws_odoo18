@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="create_account_form" name="Create Account">
+        <t t-set="no_footer" t-value="1"/>
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class="col-12 col-xl order-xl-1 oe_cart">
+                            <div>
+                                <h3> Please Fill in Your Details </h3>
+                                <t t-set="website_office_boardroom" t-value="website_sale_order.is_office_boardroom_product()"/>
+                                <t t-if="error" t-foreach="error.get('error_message', [])" t-as="err">
+                                    <h5 class="text-danger" t-esc="err" />
+                                </t>
+                                <form t-if="account_on_checkout != 'mandatory' or not is_public_user" action="/shop/create_account" method="post" class="checkout_autoformat" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div t-attf-class="mb-3 #{error.get('name') and 'o_has_error' or ''} col-lg-6 div_name">
+                                            <label class="col-form-label" for="name">Name <span style="color:red;">*</span></label>
+                                            <input type="text" name="name" t-attf-class="form-control" t-att-value="'name' in checkout and checkout['name']"/>
+                                        </div>
+                                        <div class="col-lg-6 div_name">
+                                            <div t-attf-class="mb-3 col-lg-6 ">
+                                                <label class="col-form-label" for="legal_entity">Legal Entity Type <span style="color:red;">*</span></label>
+                                                <select id="legal_entity" name="legal_entity" t-attf-class="form-select">
+                                                    <option value="">Legal Entity Type...</option>
+                                                    <t t-foreach="legal_entity_ids.sorted(key=lambda m: m.rank)" t-as="l">
+                                                        <option t-att-value="l.id" t-att-selected="l.id == (partner_legal_entity and partner_legal_entity.id or -1)">
+                                                            <t t-esc="l.name" />
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="mb-3 col-lg-6" id="div_email">
+                                            <label t-attf-class="col-form-label" for="email">Email <span style="color:red;">*</span></label>
+                                            <input type="email" name="email" t-attf-class="form-control" t-att-value="'email' in checkout and checkout['email']"/>
+                                        </div>
+                                        <div t-attf-class="mb-3 col-lg-6" id="div_phone">
+                                            <label class="col-form-label" for="phone">Phone <span style="color:red;">*</span></label>
+                                            <input type="tel" name="phone" t-attf-class="form-control" t-att-value="'phone' in checkout and checkout['phone']"/>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="mb-3 col-lg-12 div_street">
+                                            <label class="col-form-label" for="street">Address: Street and Number<span style="color:red;">*</span></label>
+                                            <input type="text" name="street" t-attf-class="form-control" t-att-value="'street' in checkout and checkout['street']"/>
+                                        </div>
+                                        <div t-attf-class="mb-3 col-lg-12 div_street2">
+                                            <label class="col-form-label" for="street2">Complex Name and/or Suburb<span style="color:red;">*</span></label>
+                                            <input type="text" name="street2" t-attf-class="form-control" t-att-value="'street2' in checkout and checkout['street2']"/>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <t t-set='zip_city' t-value='country and [x for x in country.get_address_fields() if x in ["zip", "city"]] or ["city", "zip"]'/>
+                                        <t t-if="'zip' in zip_city and zip_city.index('zip') &lt; zip_city.index('city')">
+                                            <div t-attf-class="mb-3 col-md-4 div_zip">
+                                                <label class="col-form-label" for="zip">Area Code<span class="d-none d-md-inline"></span> <span style="color:red;">*</span></label>
+                                                <input type="text" name="zip" t-attf-class="form-control" t-att-value="'zip' in checkout and checkout['zip']"/>
+                                            </div>
+                                        </t>
+                                        <div t-attf-class="mb-3 col-md-8 div_city">
+                                            <label class="col-form-label" for="city">City <span style="color:red;">*</span></label>
+                                            <input type="text" name="city" t-attf-class="form-control" t-att-value="'city' in checkout and checkout['city']"/>
+                                        </div>
+                                        <t t-if="'zip' in zip_city and zip_city.index('zip') &gt; zip_city.index('city')">
+                                            <div t-attf-class="mb-3 #{error.get('zip') and 'o_has_error' or ''} col-md-4 div_zip">
+                                                <label class="col-form-label" for="zip">Area Code<span class="d-none d-md-inline"></span> <span style="color:red;">*</span></label>
+                                                <input type="text" name="zip" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="'zip' in checkout and checkout['zip']"/>
+                                            </div>
+                                        </t>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="mb-3 #{error.get('country_id') and 'o_has_error' or ''} col-lg-6 div_country">
+                                            <label class="col-form-label" for="country_id">Country <span style="color:red;">*</span></label>
+                                            <select id="country_id" name="country_id" t-attf-class="form-select #{error.get('country_id') and 'is-invalid' or ''}" t-att-mode="mode[1]">
+                                                <option value="">Country...</option>
+                                                <t t-foreach="countries" t-as="c">
+                                                    <option t-att-value="c.id" t-att-selected="c.id == (country and country.id or -1)">
+                                                        <t t-esc="c.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div t-attf-class="mb-3 #{error.get('state_id') and 'o_has_error' or ''} col-lg-6 div_state" t-att-style="(not country or not country.state_ids) and 'display: none'">
+                                            <label class="col-form-label" for="state_id">State / Province <span style="color:red;">*</span></label>
+                                            <select name="state_id" t-attf-class="form-select #{error.get('state_id') and 'is-invalid' or ''}" data-init="1">
+                                                <option value="">State / Province...</option>
+                                                <t t-foreach="country_states" t-as="s">
+                                                    <option t-att-value="s.id" t-att-selected="s.id == ('state_id' in checkout and country and checkout['state_id'] != '' and int(checkout['state_id']))">
+                                                        <t t-esc="s.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div id="entity_representative" class="row">
+                                            <hr/>
+                                            <h4>Entity</h4>
+                                            <div t-attf-class="mb-3 #{error.get('entity_reg_no') and 'o_has_error' or ''} col-lg-6 div_entity_reg_no">
+                                                <label class="col-form-label" for="entity_reg_no">Registration Number <span style="color:red;">*</span></label>
+                                                <input type="text" name="entity_reg_no" t-attf-class="form-control" t-att-value="'entity_reg_no' in checkout and checkout['entity_reg_no']"/>
+                                            </div>
+                                            <div class="w-100"/>
+                                            <div t-attf-class="mb-3 #{error.get('entity_vat_no') and 'o_has_error' or ''} col-lg-6 div_entity_vat_no">
+                                                <label class="col-form-label" for="entity_vat_no">VAT Number </label>
+                                                <input type="text" name="entity_vat_no" t-attf-class="form-control" t-att-value="'entity_vat_no' in checkout and checkout['entity_vat_no']"/>
+                                            </div>
+                                            <div t-attf-class="form-group col-lg-6">
+                                                <label for="entity_reg_cert" class="form-label">Upload Entity Registration Certificate/Document <span style="color:red;">*</span></label>
+                                                <input class="form-control" type="file" id="entity_reg_cert" name="entity_reg_cert" t-attf-class="form-control #{error.get('entity_reg_cert') and 'is-invalid' or ''}"/><br/>
+                                            </div>
+                                            <div class="w-100"/>
+                                            <div t-attf-class="form-group col-lg-6">
+                                                <label for="entity_reg_address" class="form-label">Upload Proof of Current Registered Address <span style="color:red;">*</span></label>
+                                                <input class="form-control" type="file" id="entity_reg_address" name="entity_reg_address" t-attf-class="form-control #{error.get('entity_reg_address') and 'is-invalid' or ''}"/><br/>
+                                            </div>
+                                            <hr/>
+                                            <h4>Entity Representative</h4>
+                                            <div t-attf-class="mb-3 #{error.get('entity_rep_name_sur') and 'o_has_error' or ''} col-lg-6 div_entity_rep_name_sur">
+                                                <label class="col-form-label" for="entity_rep_name_sur">Name and Surname <span style="color:red;">*</span></label>
+                                                <input type="text" name="entity_rep_name_sur" t-attf-class="form-control" t-att-value="'entity_rep_name_sur' in checkout and checkout['entity_rep_name_sur']"/>
+                                            </div>
+                                            <div t-attf-class="form-group col-lg-6">
+                                                <label for="entity_rep_role" class="form-label">Role <span style="color:red;">*</span></label>
+                                                <select id="entity_rep_role" name="entity_rep_role" t-attf-class="form-select #{error.get('entity_rep_role') and 'is-invalid' or ''}" t-att-mode="mode[1]">
+                                                    <option value="">Role...</option>
+                                                    <t t-foreach="roles" t-as="r">
+                                                        <option t-att-value="r.id" t-att-selected="r.id == (role and role.id or -1)">
+                                                            <t t-esc="r.name" />
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                            <div class="w-100"/>
+                                            <div t-attf-class="mb-3 #{error.get('entity_rep_id_number') and 'o_has_error' or ''} col-lg-6 div_entity_rep_id_number">
+                                                <label class="col-form-label" for="entity_rep_id_number">ID Number <span style="color:red;">*</span></label>
+                                                <input type="text" name="entity_rep_id_number" t-attf-class="form-control" t-att-value="'entity_rep_id_number' in checkout and checkout['entity_rep_id_number']"/>
+                                            </div>
+                                            <div t-attf-class="mb-3 col-lg-6" id="div_entity_rep_cell">
+                                                <label class="col-form-label" for="entity_rep_cell">Cell Phone Number <span style="color:red;">*</span></label>
+                                                <input type="tel" name="entity_rep_cell" t-attf-class="form-control" t-att-value="'entity_rep_cell' in checkout and checkout['entity_rep_cell']"/>
+                                            </div>
+                                            <div class="w-100"/>
+                                            <div t-attf-class="mb-3 col-lg-6" id="div_entity_rep_email">
+                                                <label t-attf-class="col-form-label" for="entity_rep_email">Email Address <span style="color:red;">*</span></label>
+                                                <input type="email" name="entity_rep_email" t-attf-class="form-control" t-att-value="'entity_rep_email' in checkout and checkout['entity_rep_email']"/>
+                                            </div>
+                                            <div t-attf-class="form-group col-lg-6">
+                                                <label for="entity_rep_proof" class="form-label">Upload Proof of Current Residential Address (FICA complaint) <span style="color:red;">*</span></label>
+                                                <input class="form-control" type="file" id="entity_rep_proof" name="entity_rep_proof" t-attf-class="form-control #{error.get('entity_rep_proof') and 'is-invalid' or ''}"/>
+                                            </div>
+                                            <div class="w-100"/>
+                                            <div t-attf-class="form-group col-lg-6">
+                                                <label for="entity_rep_sign" class="form-label">Mandate/Resolution for Representative to Sign this Lease Agreement <span style="color:red;">*</span></label>
+                                                <input class="form-control" type="file" id="entity_rep_sign" name="entity_rep_sign" t-attf-class="form-control #{error.get('entity_rep_sign') and 'is-invalid' or ''}"/><br/>
+                                            </div>
+                                            <hr/>
+                                            <h4>Individual Responsible for Payment of Accounts</h4>
+                                            <div t-attf-class="mb-3 #{error.get('ind_resp_pay_ac_name_sur') and 'o_has_error' or ''} col-lg-6 div_ind_resp_pay_ac_name_sur">
+                                                <label class="col-form-label" for="ind_resp_pay_ac_name_sur">Name and Surname <span style="color:red;">*</span></label>
+                                                <input type="text" name="ind_resp_pay_ac_name_sur" t-attf-class="form-control" t-att-value="'ind_resp_pay_ac_name_sur' in checkout and checkout['ind_resp_pay_ac_name_sur']"/>
+                                            </div>
+                                            <div t-attf-class="mb-3 col-lg-6" id="div_ind_resp_pay_ac_cell">
+                                                <label class="col-form-label" for="ind_resp_pay_ac_cell">Telephone/Cell Phone Number <span style="color:red;">*</span></label>
+                                                <input type="tel" name="ind_resp_pay_ac_cell" t-attf-class="form-control" t-att-value="'ind_resp_pay_ac_cell' in checkout and checkout['ind_resp_pay_ac_cell']"/>
+                                            </div>
+                                            <div class="w-100"/>
+                                            <div t-attf-class="mb-3 col-lg-6" id="div_ind_resp_pay_ac_email">
+                                                <label t-attf-class="col-form-label" for="ind_resp_pay_ac_email">Email Address <span style="color:red;">*</span></label>
+                                                <input type="email" name="ind_resp_pay_ac_email" t-attf-class="form-control" t-att-value="'ind_resp_pay_ac_email' in checkout and checkout['ind_resp_pay_ac_email']"/>
+                                            </div>
+                                            <hr/>
+                                        </div>
+                                        <div id="individual_entity" class="row">
+                                            <h4>Upload Proof of Current Residential Address (less than 3 months old, e.g. Municipal Account/Lease Agreement/Bank Statement)</h4>
+                                            <div t-attf-class="form-group col-lg-6">
+                                                <label for="upload_proof_residential" class="form-label">Upload Proof of Current Residential Address<span style="color:red;">*</span></label>
+                                                <input class="form-control" type="file" id="upload_proof_residential" name="upload_proof_residential" t-attf-class="form-control #{error.get('upload_proof_residential') and 'is-invalid' or ''}"/><br/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <h4>Bank Details</h4>
+                                        <div t-attf-class="form-group col-lg-6">
+                                            <label for="bank_name" class="form-label">Bank Name <span style="color:red;">*</span></label>
+                                            <input class="form-control" type="text" id="bank_name" name="bank_name" t-attf-class="form-control #{error.get('bank_name') and 'is-invalid' or ''}" t-att-value="'bank_name' in checkout and checkout['bank_name']"/>
+                                        </div>
+                                        <div t-attf-class="form-group col-lg-6">
+                                            <label for="bank_code" class="form-label">Branch Code <span style="color:red;">*</span></label>
+                                            <input class="form-control" type="text" id="bank_code" name="bank_code" t-attf-class="form-control #{error.get('bank_code') and 'is-invalid' or ''}" t-att-value="'bank_code' in checkout and checkout['bank_code']"/>
+                                        </div>
+                                        <div t-attf-class="form-group col-lg-6 mb16">
+                                            <label for="bank_name" class="form-label">Account Number <span style="color:red;">*</span></label>
+                                            <input class="form-control" type="text" id="account_number" name="account_number" t-attf-class="form-control #{error.get('account_number') and 'is-invalid' or ''}" t-att-value="'account_number' in checkout and checkout['account_number']"/>
+                                        </div>
+                                        <hr/>
+                                        <h4>Documents Required</h4>
+                                        <div t-attf-class="form-group col-lg-6">
+                                            <label for="formFile" class="form-label">Upload ID <span style="color:red;">*</span></label>
+                                            <input class="form-control" type="file" id="formFile" name="file_id" t-attf-class="form-control #{error.get('file_id') and 'is-invalid' or ''}"/>
+                                        </div>
+                                        <div t-attf-class="form-group col-lg-6">
+                                            <label for="formFileSelfie" class="form-label">Upload Selfie <span style="color:red;">*</span></label>
+                                            <input class="form-control" type="file" id="formFileSelfie" name="file_selfie" t-attf-class="form-control #{error.get('file_selfie') and 'is-invalid' or ''}"/>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="form-group col-lg-6" id="add_more">
+                                            <a id="add_more" href="#" >Add more</a>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <hr/>
+                                        <div t-attf-class="form-group col-lg-6" id="file_input_list">
+                                            <label for="formFileNumber" class="form-label">Enter Vehicle Registration Number <t t-if="not website_office_boardroom"><span style="color:red;">*</span></t></label>
+                                            <input class="form-control" type="text" id="formFileNumber" name="file_input_1" t-attf-class="form-control #{error.get('file_input_1') and 'is-invalid' or ''}" t-att-value="'file_input_1' in checkout and checkout['file_input_1']"/>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="form-group col-lg-6" id="most_recent_landlord_name">
+                                            <label for="most_recent_landlord_name" class="form-label">Enter Most Recent Landlord Name <t t-if="not website_office_boardroom"><span style="color:red;">*</span></t></label>
+                                            <input class="form-control" type="text" id="most_recent_landlord_name" name="most_recent_landlord_name" t-attf-class="form-control #{error.get('most_recent_landlord_name') and 'is-invalid' or ''}" t-att-value="'most_recent_landlord_name' in checkout and checkout['most_recent_landlord_name']"/>
+                                        </div>
+                                        <div t-attf-class="form-group col-lg-6 mb16" id="most_recent_landlord_phone">
+                                            <label for="most_recent_landlord_phone" class="form-label">Enter Most Recent Landlord Contact Number <t t-if="not website_office_boardroom"><span style="color:red;">*</span></t></label>
+                                            <input class="form-control" type="text" id="most_recent_landlord_phone" name="most_recent_landlord_phone" t-attf-class="form-control #{error.get('most_recent_landlord_phone') and 'is-invalid' or ''}" t-att-value="'most_recent_landlord_phone' in checkout and checkout['most_recent_landlord_phone']"/>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="form-group col-lg-6" id="relative_name">
+                                            <label for="relative_name" class="form-label">Enter Friend/Relative Name <t t-if="not website_office_boardroom"><span style="color:red;">*</span></t></label>
+                                            <input class="form-control" type="text" id="relative_name" name="relative_name" t-attf-class="form-control #{error.get('relative_name') and 'is-invalid' or ''}" t-att-value="'relative_name' in checkout and checkout['relative_name']"/>
+                                        </div>
+                                        <div t-attf-class="form-group col-lg-6 mb16" id="relative_phone">
+                                            <label for="relative_phone" class="form-label">Enter Friend/Relative Contact Number <t t-if="not website_office_boardroom"><span style="color:red;">*</span></t></label>
+                                            <input class="form-control" type="text" id="relative_phone" name="relative_phone" t-attf-class="form-control #{error.get('relative_phone') and 'is-invalid' or ''}" t-att-value="'relative_phone' in checkout and checkout['relative_phone']"/>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <t t-if="not only_services">
+                                            <div class="col-lg-12">
+                                                <div class="checkbox" style="display:none;">
+                                                  <label>
+                                                    <input type="checkbox" id='shipping_use_same' class="mr8" name='use_same' value="1" checked='checked'/>Ship to the same address
+                                                    <span class='ship_to_other text-muted' style="display: none">&amp;nbsp;(<i>Your shipping address will be requested later) </i></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                                    <input type="hidden" name="submitted" value="1" />
+                                    <input type="hidden" name="partner_id" t-att-value="partner_id or '0'" />
+                                    <input type="hidden" name="callback" t-att-value="callback" />
+                                    <!-- Example -->
+                                    <input type="hidden" name="field_required" t-att-value="'phone,name'" />
+
+                                    <div class="d-flex justify-content-between">
+                                        <!-- <a role="button" t-att-href="mode == ('new', 'billing') and '/shop/cart' or '/shop/checkout'" class="btn btn-secondary mb32">
+                                            <i class="fa fa-chevron-left"/>
+                                            <span>Back</span>
+                                        </a> -->
+                                        <a role="button" href="#" class="btn btn-primary mb32 account-submit a-submit-disable a-submit-loading">
+                                            <span>Next</span>
+                                            <i class="fa fa-chevron-right"/>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

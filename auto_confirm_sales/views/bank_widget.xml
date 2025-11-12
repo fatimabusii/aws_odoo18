@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_bank_rec_widget_form_inherit_sale_order_inherit" model="ir.ui.view">
+            <field name="name">bank.rec.widget.form.inherit.sale_order</field>
+            <field name="model">bank.rec.widget</field>
+            <field name="inherit_id" ref="sale_account_accountant.view_bank_rec_widget_form_inherit_sale_order"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='sale_orders_tab']//span" position='after'>
+                    <br/>
+                    <field name='is_sales_validated' invisible='1'/>
+                    <span attrs="{'invisible':[('is_sales_validated','=',False)]}"><h2>This sales order Validated.</h2></span>
+                    <button name="button_auto_validate_sales_order" class="btn-primary" type="object" string="Validate Sales" attrs="{'invisible':[('is_sales_validated','=',True)]}"/>
+                    <field name="matched_sale_order_ids" readonly="1">
+                        <tree>
+                            <field name="name" string="Number" readonly="1" decoration-bf="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="amount_total" sum="Total Tax Included" widget="monetary" decoration-bf="1" optional="show"/>
+                            <field name="state" decoration-success="state == 'sale' or state == 'done'" decoration-info="state == 'draft' or state == 'sent'" widget="badge" optional="show"/>
+                            <field name="invoice_status"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
