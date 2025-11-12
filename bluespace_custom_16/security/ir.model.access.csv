@@ -1,5 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_office_visitors","office.visitors","model_office_visitors",,1,1,1,1
-"bluespace_custom_16.access_year_year","access_year_year","bluespace_custom_16.model_year_year","base.group_user",1,1,1,1
-"access_entity_representative_role","entity.representative.role","model_entity_representative_role",,1,1,1,1
-"access_lease_confirm_wizard","lease.confirm.wizard","model_lease_confirm_wizard",,1,1,1,1
