@@ -9,8 +9,9 @@
     'maintainer': '',
     'license': 'LGPL-3',
     'depends': [
-        'website_sale', 'website_sale_renting', 'auto_rental', 'erpweb_no_of_visitors', 'base', 'sale_renting'
+        'website_sale', 'auto_rental', 'erpweb_no_of_visitors', 'base', 'sale_renting'
     ],
+    # 'website_sale_renting'
     'data': [
         # 'security/ir.model.access.csv',
         # 'data/email_template.xml',

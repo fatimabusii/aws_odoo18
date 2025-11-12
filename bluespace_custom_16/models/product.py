@@ -7,7 +7,7 @@ from odoo import http
 from odoo.http import request
 import pytz
 import holidays
-from odoo.addons.website_sale_renting.models.product_template import ProductTemplate
+# from odoo.addons.website_sale_renting.models.product_template import ProductTemplate
 
 from odoo.exceptions import UserError
 
