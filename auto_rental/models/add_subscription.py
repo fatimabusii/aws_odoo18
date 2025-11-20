@@ -252,7 +252,12 @@ class SaleOrder(models.Model):
                             line.price_unit = line.price_to_set_subscrition
                         else:
                             if subscription.invoice_count > 0:
-                                line.price_unit = line.price_to_set_subscrition
+                                if line.price_unit != line.total_service_charge:
+                                    line.price_unit = line.total_service_charge
+                                else:                             
+                                    line.price_unit = line.price_to_set_subscrition
+                                
+                            
 
         invoices = super()._create_recurring_invoice(automatic, batch_size)
         invoices.transaction_ids = [(6, 0, [])]
@@ -299,7 +304,10 @@ class SaleOrder(models.Model):
                 )
                 if line1 and not order.is_website and order.invoice_count > 0:
                     for l in line1:
-                        l.price_unit = l.price_to_set_subscrition
+                        if l.price_unit != l.total_service_charge:
+                            l.price_unit = l.total_service_charge
+                        else:
+                            l.price_unit = l.price_to_set_subscrition
 
             # Compute next invoice date if available
             if hasattr(order, '_next_recur_date'):
@@ -307,6 +315,86 @@ class SaleOrder(models.Model):
                 if inv_date:
                     invoices.invoice_date = inv_date
 
+        return invoices
+
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        # _logger.info("="*80)
+        # _logger.info("_CREATE_INVOICES START")
+        # _logger.info("grouped=%s, final=%s, date=%s", grouped, final, date)
+        # _logger.info("Context: %s", self.env.context)
+        # _logger.info("Orders to invoice: %s", self.ids)
+        
+        invoices = super()._create_invoices(grouped=grouped, final=final, date=date)
+        # _logger.info("Invoices created by super(): %s", invoices.ids if invoices else None)
+        
+        for order in self:
+            # _logger.info("-" * 60)
+            # _logger.info("Processing order ID=%s, Name=%s", order.id, order.name)
+            # _logger.info("Order.is_website=%s, Order.invoice_count=%s", order.is_website, order.invoice_count)
+            
+            service_product = order.get_service_product()
+            # _logger.info("Service product ID=%s, Name=%s", 
+                        # service_product.id if service_product else None,
+                        # service_product.name if service_product else None)
+            
+            line1 = order.order_line.filtered(lambda x: x.product_id.id == order.get_service_product().id)
+            
+            if line1:
+                # _logger.info(">>> SERVICE LINE FOUND: Line ID=%s", line1.id)
+                # _logger.info("BEFORE CHANGE:")
+                # _logger.info("  line1.price_unit = %.2f", line1.price_unit)
+                # _logger.info("  line1.price_to_set_subscrition = %.2f", line1.price_to_set_subscrition)
+                # _logger.info("  line1.total_service_charge = %.2f", line1.total_service_charge)
+                
+                if line1 and not order.is_website and order.invoice_count > 0:
+                    # _logger.info(">>> CONDITION MET: Will update price_unit")
+                    # _logger.info("    Condition breakdown:")
+                    # _logger.info("      line1 exists: %s", bool(line1))
+                    # _logger.info("      not order.is_website: %s", not order.is_website)
+                    # _logger.info("      order.invoice_count > 0: %s (%s)", order.invoice_count > 0, order.invoice_count)
+                    
+                    # _logger.info(">>> UPDATING: line1.price_unit = line1.price_to_set_subscrition (%.2f)", 
+                    #             line1.price_to_set_subscrition)
+                    # line1.price_unit = line1.price_to_set_subscrition
+
+                    if line1.price_unit != line1.total_service_charge:
+                        # _logger.info(">>> MISMATCH DETECTED:")
+                        # _logger.info("    price_unit (%.2f) != total_service_charge (%.2f)", 
+                        #             line1.price_unit, line1.total_service_charge)
+                        # _logger.info(">>> UPDATING: line1.price_unit = line1.total_service_charge (%.2f)", 
+                        #             line1.total_service_charge)
+                        line1.price_unit = line1.total_service_charge
+                    # else:
+                    #     _logger.info(">>> NO UPDATE NEEDED: price_unit already matches total_service_charge (%.2f)", 
+                    #             line1.total_service_charge)
+                    
+                    # _logger.info("AFTER CHANGE:")
+                    # _logger.info("  line1.price_unit = %.2f", line1.price_unit)
+                    # _logger.info("  line1.price_to_set_subscrition = %.2f", line1.price_to_set_subscrition)
+                    # _logger.info("  line1.total_service_charge = %.2f", line1.total_service_charge)
+                # else:
+                #     _logger.info(">>> CONDITION NOT MET: Will NOT update price_unit")
+                #     _logger.info("    Condition breakdown:")
+                #     _logger.info("      line1 exists: %s", bool(line1))
+                #     _logger.info("      not order.is_website: %s", not order.is_website)
+                #     _logger.info("      order.invoice_count > 0: %s (%s)", order.invoice_count > 0, order.invoice_count)
+            # else:
+            #     _logger.info(">>> NO SERVICE LINE FOUND for this order")
+            
+            inv_date = order._next_recur_date(order.next_invoice_date)
+            # _logger.info("Next recur date calculation:")
+            # _logger.info("  order.next_invoice_date = %s", order.next_invoice_date)
+            # _logger.info("  Calculated inv_date = %s", inv_date)
+            
+            if inv_date:
+                # _logger.info(">>> Setting invoices.invoice_date to %s", inv_date)
+                invoices.invoice_date = inv_date
+            # else:
+            #     _logger.info(">>> NOT setting invoice_date (inv_date is None/False)")
+        
+        # _logger.info("Returning invoices: %s", invoices.ids if invoices else None)
+        # _logger.info("_CREATE_INVOICES END")
+        # _logger.info("="*80)
         return invoices
 
 

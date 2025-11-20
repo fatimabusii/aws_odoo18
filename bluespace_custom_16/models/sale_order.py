@@ -434,14 +434,28 @@ class SaleOrderLine(models.Model):
 
     def write(self, vals):
         result = super(SaleOrderLine, self).write(vals)
-        for record in self:
-            deposite_product_id = self.env['product.product'].search([
+
+        deposite_product_id = self.env['product.product'].search([
                                 ('default_code', '=', 'RENTAL_DEPOSIT')
                             ], limit=1)
-            deposit_in_order = record.order_id.order_line.filtered(lambda x: x.product_id.id == deposite_product_id.id)
-            service_product_id = self.env['product.product'].search([
+        deposit_in_order = record.order_id.order_line.filtered(lambda x: x.product_id.id == deposite_product_id.id)
+        service_product_id = self.env['product.product'].search([
                                 ('default_code', '=', 'RENTAL_SERVICE_CHARGE')
                             ], limit=1)
+        
+        if 'price_unit' in vals:
+            for record in self:
+                if record.product_id.id == service_product_id.id:
+               
+                    vals['total_service_charge'] = vals['price_unit']
+                    
+                    service_product_id.sudo().lst_price = vals['price_unit']
+        
+
+        result = super(SaleOrderLine, self).write(vals)
+
+        for record in self:
+            
 
             if record.product_id.product_category in ['1_storage_unit', '2_office', '3_boardroom', '4_parking'] \
             and not record.order_id.team_id.is_website:
